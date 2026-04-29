@@ -317,22 +317,47 @@ const SEGMENTS = [
 ];
 
 const THESES = [
-  { id: 'A', title: 'Telecom Arc', summary: 'Metered → bundled → unlimited-with-fair-use as the buyer broadens.',
-    pro: 'Customer-side psychology evidence is overwhelming. Spend Cap is already a soft-throttle. Org pooling already mimics family plans.',
-    con: 'Marginal cost on compute, egress, AI inference is not zero. Heavy-tail outliers can be 1000x median, not 5x.',
-    verdict: 'Modify', verdictColor: 'amber' },
-  { id: 'B', title: 'Workload Bundles', summary: 'Different workloads consume differently; ship shaped bundles, no "unlimited" rhetoric.',
-    pro: 'Matches actual cost-to-serve. Avoids Vercel\'s communication problems.',
-    con: 'SKU proliferation. Confusing for the customer who is "all of the above."',
-    verdict: 'Partial', verdictColor: 'amber' },
-  { id: 'C', title: 'Hybrid (Bundles + Meters + Commits)', summary: 'Bundles for understanding, meters for trust, commits for scale. One billing engine, three buying motions.',
-    pro: 'Mirrors AWS, Snowflake, Databricks, Stripe. Aligns with the JD\'s "pricing architecture that scales to whatever Supabase becomes."',
-    con: 'Internal complexity. Risk of an incomprehensible pricing page.',
-    verdict: 'Accept', verdictColor: 'emerald', isRecommended: true },
-  { id: 'D', title: 'AI Changes Everything', summary: 'Apps scale through agents not human users; price on workflows not MAUs.',
-    pro: 'Already showing up in Vercel Active CPU and Lovable per-message credits.',
-    con: 'Premature for most Supabase customers. Picks up someone else\'s token risk.',
-    verdict: 'Layer on top', verdictColor: 'emerald' }
+  {
+    id: 'A',
+    title: 'Telecom is a trust lens, not a pricing model',
+    summary: 'As Supabase\'s buyer base broadens beyond backend experts, pricing needs to become easier to understand. Telecom helps explain bill shock, overages, shared plans, and safe-feeling bundles, but it does not transfer cleanly to cloud cost structure.',
+    why: 'Customer-side psychology is relevant: people hate surprise bills, and Supabase already has Spend Cap and fair-use style controls that acknowledge pricing trust as a product concern.',
+    risk: 'Compute, egress, read replicas, PITR, log drains, branching, and AI-driven workloads create real marginal cost. A simple unlimited model could damage margin or reliability.',
+    validate: 'Review billing-support tickets, churn after first overage, upgrade behavior after quota warnings, and customer research on whether buyers actually understand Spend Cap boundaries.',
+    confidence: 'High as a customer psychology lens. Low as a literal pricing model.',
+    confidenceTone: 'amber'
+  },
+  {
+    id: 'B',
+    title: 'Credits may help newer builders, but only as a translation layer',
+    summary: 'Credits could make spend more legible for AI-assisted builders and small teams, but developer-visible meters should remain underneath. Credits should translate infrastructure economics, not hide them.',
+    why: 'Supabase already uses compute credits on paid organizations, so the concept exists in the billing grammar. Other AI-builder tools are also normalizing credits, wallets, and budget controls.',
+    risk: 'Credits can become confusing or feel like a dark pattern if customers cannot see what consumed them. They can also hide high-cost usage like egress, external model calls, or branch-heavy workflows.',
+    validate: 'Test wallet language, invoice explainers, dashboard credit burn-down, and warning copy before changing actual billing. Measure comprehension, free-to-paid conversion, support contacts, and downgrade behavior.',
+    confidence: 'Medium-high as a UX layer. Not proven as a full pricing architecture.',
+    confidenceTone: 'emerald'
+  },
+  {
+    id: 'C',
+    title: 'The highest-confidence start is usage clarity, not a new plan',
+    summary: 'The safest near-term opportunity may not be a new tier or price. It may be better forecasting, clearer invoice language, better Spend Cap education, and earlier alerts around compute, branches, egress, and add-ons.',
+    why: 'Supabase already has a reputation for transparent docs and billing controls. Extending that strength is lower-risk than jumping straight to structural pricing changes from the outside.',
+    risk: 'UX improvements alone may not solve the business problem if the real issue is plan mix, Pro-to-Team conversion, enterprise procurement, or under-monetized heavy users.',
+    validate: 'Segment billing friction into four buckets: comprehension, affordability, margin leakage, and packaging gaps. Each needs a different solution and a different experiment.',
+    confidence: 'High. This is the least risky place to start.',
+    confidenceTone: 'emerald',
+    isStartingPoint: true
+  },
+  {
+    id: 'D',
+    title: 'AI workloads need their own language, but maybe not their own plan yet',
+    summary: 'AI changes usage distribution through machine traffic, background jobs, eval branches, vector-heavy workloads, and non-human spikes. But an AI plan should be earned by data, not assumed.',
+    why: 'AI workload cost can show up through generic infrastructure meters: compute, storage, egress, Edge Function invocations, Realtime, Auth, and database growth. That makes the spend hard for new builders to reason about.',
+    risk: 'AI builders may look different in acquisition but similar in production usage. A separate AI plan could add complexity without improving conversion, trust, or margin.',
+    validate: 'Tag cohorts by acquisition source and app pattern: AI-assisted builders, traditional backend developers, agencies, B2B SaaS teams, and AI-native startups. Compare usage mix, support needs, conversion, overages, and gross margin.',
+    confidence: 'Medium. Strong enough to instrument now, not strong enough to hard-code.',
+    confidenceTone: 'amber'
+  }
 ];
 
 const RECOMMENDED_TIERS = [
@@ -422,7 +447,7 @@ const Hero = () => (
           { num: '~7M', label: 'Developers on Supabase', sub: 'Copplestone, Apr 2026 LinkedIn' },
           { num: '$5B', label: 'Series E valuation, Oct 2025', sub: 'Reported $10B funding talks in Apr 2026' },
           { num: '$25', label: 'Pro plan headline, unchanged', sub: 'Held since March 2021' },
-          { num: '9', label: 'Distinct meters on one invoice', sub: 'Compute, MAU, egress, branching, vector …' }
+          { num: '9', label: 'Cost surfaces on one invoice', sub: 'Compute, MAU, egress, branching, vector …' }
         ].map((stat, i) => (
           <div key={i} className="bg-stone-950 p-6 md:p-8">
             <div className="font-display text-3xl md:text-4xl text-emerald-300 num-display mb-2">{stat.num}</div>
@@ -436,7 +461,7 @@ const Hero = () => (
       <div className="mt-16 grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60 anim-fade-up" style={{animationDelay: '0.35s'}}>
         {[
           { tag: '3-minute read', heading: 'High Level', body: 'This page plus §01 (the setup) and §10 (framework I\'d validate). The thesis and the calibration of confidence on it.' },
-          { tag: '15-minute read', heading: 'Recommendations', body: 'Add §07 (four theses, with verdicts), §09 (interactive Bundle Builder), §11 (90-day validation plan). The reasoning and the sequencing.' },
+          { tag: '15-minute read', heading: 'Validation path', body: 'Add §07 (four hypotheses to validate), §09 (interactive Bundle Builder), §11 (90-day validation plan). The reasoning, humility, and sequencing.' },
           { tag: 'Full brief', heading: 'Deep read', body: 'All sections including telecom evolution analysis, segment map, competitive landscape, and §12 (open questions I\'d ask Supabase).' }
         ].map((row, i) => (
           <div key={i} className="bg-stone-950 p-6">
@@ -854,38 +879,61 @@ const Theses = () => (
     <div className="max-w-6xl mx-auto">
       <SectionHeader
         num="07"
-        label="Four Theses"
-        title="One survives unmodified."
-        lead="A probable answer is Thesis C, with a Thesis D overlay, framed in the customer-facing language of Thesis A."
+        label="Four Hypotheses"
+        title="The answer should be earned, not assumed."
+        lead="These are not recommendations to ship. They are starting hypotheses I would pressure-test with Supabase's internal usage data, customer research, finance models, and engineering constraints. My current bias is to preserve developer-visible meters while testing better abstractions for newer builder segments."
       />
+
+      <div className="mb-10 p-6 md:p-8 bg-stone-950 border border-stone-800/70">
+        <div className="flex gap-4 items-start">
+          <AlertTriangle size={18} className="text-amber-300/80 flex-shrink-0 mt-1" />
+          <p className="font-body text-lg md:text-xl text-stone-300 leading-relaxed max-w-4xl">
+            I would be cautious about treating any external pricing analysis as a final answer. Supabase's pricing architecture sits at the intersection of developer trust, infrastructure cost, PLG conversion, enterprise procurement, and engineering feasibility. From the outside, I can form hypotheses. From the inside, I would validate them against cohort usage, gross margin by meter, support-ticket taxonomy, public sentiment, and upgrade behavior.
+          </p>
+        </div>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-px bg-stone-800/60 border border-stone-800/60">
-        {THESES.map((t, i) => (
-          <div key={t.id} className={`bg-stone-950 p-8 md:p-10 relative ${t.isRecommended ? 'ring-1 ring-emerald-700/40 ring-inset' : ''}`}>
-            {t.isRecommended && (
+        {THESES.map((t) => (
+          <div key={t.id} className={`bg-stone-950 p-8 md:p-10 relative ${t.isStartingPoint ? 'ring-1 ring-emerald-700/40 ring-inset' : ''}`}>
+            {t.isStartingPoint && (
               <div className="absolute top-6 right-6">
-                <span className="font-mono text-[10px] tracking-widest uppercase text-emerald-400 bg-emerald-950/60 px-2 py-1">★ Recommended</span>
+                <span className="font-mono text-[10px] tracking-widest uppercase text-emerald-400 bg-emerald-950/60 px-2 py-1">Strongest place to start</span>
               </div>
             )}
             <div className="flex items-baseline gap-3 mb-4">
               <span className="font-display text-5xl text-stone-700 italic">{t.id}</span>
-              <Eyebrow>Thesis</Eyebrow>
+              <Eyebrow>Hypothesis</Eyebrow>
             </div>
             <h3 className="font-display text-2xl md:text-3xl text-stone-100 mb-4 leading-tight">{t.title}</h3>
             <p className="font-body text-stone-300 leading-relaxed mb-6 text-lg">{t.summary}</p>
-            <div className="space-y-4 mb-6 text-sm">
+            <div className="space-y-5 mb-6 text-sm">
               <div className="flex gap-3">
                 <Check size={14} className="text-emerald-400/70 flex-shrink-0 mt-1" />
-                <p className="font-body text-stone-400">{t.pro}</p>
+                <div>
+                  <div className="font-mono text-[9px] tracking-widest uppercase text-stone-600 mb-1">Why it may be true</div>
+                  <p className="font-body text-stone-400 leading-relaxed">{t.why}</p>
+                </div>
               </div>
               <div className="flex gap-3">
                 <X size={14} className="text-amber-400/70 flex-shrink-0 mt-1" />
-                <p className="font-body text-stone-400">{t.con}</p>
+                <div>
+                  <div className="font-mono text-[9px] tracking-widest uppercase text-stone-600 mb-1">What could be wrong</div>
+                  <p className="font-body text-stone-400 leading-relaxed">{t.risk}</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Lightbulb size={14} className="text-stone-300/70 flex-shrink-0 mt-1" />
+                <div>
+                  <div className="font-mono text-[9px] tracking-widest uppercase text-stone-600 mb-1">How I'd validate</div>
+                  <p className="font-body text-stone-400 leading-relaxed">{t.validate}</p>
+                </div>
               </div>
             </div>
             <div className="pt-4 border-t border-stone-800">
-              <Eyebrow className="mb-2">Verdict</Eyebrow>
-              <span className={`font-display text-2xl italic ${t.verdictColor === 'emerald' ? 'text-emerald-300' : 'text-amber-300'}`}>
-                {t.verdict}
+              <Eyebrow className="mb-2">Current confidence</Eyebrow>
+              <span className={`font-display text-xl md:text-2xl italic ${t.confidenceTone === 'emerald' ? 'text-emerald-300' : 'text-amber-300'}`}>
+                {t.confidence}
               </span>
             </div>
           </div>
