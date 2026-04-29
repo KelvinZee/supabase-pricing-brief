@@ -404,7 +404,7 @@ const Hero = () => (
 
       <div className="max-w-3xl space-y-5 text-stone-300 font-body text-lg leading-relaxed anim-fade-up" style={{animationDelay: '0.2s'}}>
         <p>
-          Prepared by <span className="text-stone-100">Kelvin Zee</span> for Supabase, Pricing &amp; Billing role. 18 years in subscription pricing and billing platforms — T-Mobile postpaid packaging through the T-Mobile ONE transition (postpaid 56.8M&nbsp;→&nbsp;75.6M, 2015–2017), the digital transformation of T-Mobile Billing &amp; Benefits (+204% YoY one-time payment completion, +23% CLV, Mintel Best Wireless Billing 2019), and Amazon Prime's Worldwide Engagement control plane (30M+ monthly benefit utilizations across 26 countries, +23% renewals at peak).
+          Prepared by <span className="text-stone-100">Kelvin Zee</span> for Supabase, Pricing &amp; Billing role. 18 years in subscription pricing and billing platforms T-Mobile postpaid packaging through the T-Mobile ONE transition (postpaid 56.8M&nbsp;→&nbsp;75.6M, 2015–2017), the digital transformation of T-Mobile Billing &amp; Benefits (+204% YoY one-time payment completion, +23% CLV, Mintel Best Wireless Billing 2019), and Amazon Prime's Worldwide Engagement control plane (30M+ monthly benefit utilizations across 26 countries, +23% renewals at peak).
         </p>
         <p>
           This brief is a measured read of where the current architecture creates customer trust and where it leaks, framed against the buyer-base shift driving the next decision. Every recommendation is presented as a hypothesis to validate against Supabase's internal data, not a prescription to ship. The structure is built to be skimmed in three minutes, read in fifteen, or worked through end-to-end across a panel.
@@ -433,9 +433,9 @@ const Hero = () => (
       {/* How to read this navigator */}
       <div className="mt-16 grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60 anim-fade-up" style={{animationDelay: '0.35s'}}>
         {[
-          { tag: '3-minute read', heading: 'Recruiter / first pass', body: 'This page plus §01 (the setup) and §10 (framework I\'d validate). The thesis and the calibration of confidence on it.' },
-          { tag: '15-minute read', heading: 'Hiring manager', body: 'Add §07 (four theses, with verdicts), §09 (interactive Bundle Builder), §11 (90-day validation plan). The reasoning and the sequencing.' },
-          { tag: 'Full brief', heading: 'Panel / deep read', body: 'All sections including telecom evolution analysis, segment map, competitive landscape, and §12 (open questions I\'d ask Supabase).' }
+          { tag: '3-minute read', heading: 'High Level', body: 'This page plus §01 (the setup) and §10 (framework I\'d validate). The thesis and the calibration of confidence on it.' },
+          { tag: '15-minute read', heading: 'Recommendations', body: 'Add §07 (four theses, with verdicts), §09 (interactive Bundle Builder), §11 (90-day validation plan). The reasoning and the sequencing.' },
+          { tag: 'Full brief', heading: 'Deep read', body: 'All sections including telecom evolution analysis, segment map, competitive landscape, and §12 (open questions I\'d ask Supabase).' }
         ].map((row, i) => (
           <div key={i} className="bg-stone-950 p-6">
             <Eyebrow className="mb-3 text-emerald-400/80">{row.tag}</Eyebrow>
