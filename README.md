@@ -21,12 +21,6 @@ Kelvin Zee · Seattle, WA · kelvinz@gmail.com · [linkedin.com/in/kelvinz](http
 
 ## Notes on this version
 
-- This is v2, recruiter-primary. Every recommendation is presented as a hypothesis to validate against Supabase's internal data, not a prescription.
+- Vw Every recommendation is presented as a hypothesis to validate against Supabase's internal data, not a prescription.
 - Specific tier prices and quotas are illustrative, benchmarked against external comparables. They would require fake-door tests and customer interviews on Supabase data before being defended as final.
-- Sources verified April 2026. Pricing in this category moves quickly; figures may have shifted.
-
-## Tech notes
-
-Single-file static site. React via CDN (unpkg), Tailwind via CDN, Babel standalone for in-browser JSX. No build step. Loads in any modern browser. No tracking, no cookies, no analytics. Hosted free on GitHub Pages.
-
-The interactive Bundle Builder uses illustrative coefficients derived from public bill-shock anecdotes and category benchmarks. Calibration in production would replace these with real telemetry — the directional pattern is the point, not the specific numbers.
+- Sources verified April 2026
