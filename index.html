@@ -260,10 +260,10 @@ const BUNDLES = {
     marginHealth: 32, base: 49, perception: 'Customer-side popular. Margin-side requires conditions that backend infrastructure does not have.'
   },
   'workload-shaped': {
-    id: 'workload-shaped', name: 'Workload Bundle + Wallet', subtitle: 'Hybrid (the framework I\'d test)',
-    desc: 'Plan = base + included credits in a unified wallet + workload-shaped add-ons. Meters stay transparent underneath. Customer sees one dollar number; engineering retains every meter for cost-to-serve discipline.',
+    id: 'workload-shaped', name: 'Dollar Budget Layer + Guardrails', subtitle: 'Hybrid (a hypothesis to test)',
+    desc: 'Plan = base + dollar-denominated budget layer + workload guardrails. No fake points. Meters stay transparent underneath; the customer sees dollars first and engineering keeps every meter for cost-to-serve discipline.',
     predictabilityModifier: 0.86, trustModifier: 0.94, billShockModifier: 0.22,
-    marginHealth: 89, base: 0, perception: 'Recommended framework. The architecture the JD describes — meters underneath, credits in the middle, plans on top.'
+    marginHealth: 89, base: 0, perception: 'Promising only if it reduces comprehension friction. If it feels like fake currency or hides cost, it fails.'
   }
 };
 
@@ -306,14 +306,14 @@ const COMPETITORS = [
 const SEGMENTS = [
   { id: 's1', name: 'Pro Backend Dev', understands: 'All meters', misses: 'Branching compute', wedge: 'Project-level invoice clarity', priority: 3 },
   { id: 's2', name: 'Full-Stack Startup', understands: 'Most meters', misses: 'Cached vs uncached egress', wedge: 'In-product cost forecast', priority: 4 },
-  { id: 's3', name: 'Indie Hacker', understands: 'Basics', misses: 'Compute add-ons', wedge: '$9 Builder mid-tier', priority: 4 },
-  { id: 's4', name: 'Vibe Coder', understands: 'Almost nothing', misses: 'Almost everything', wedge: 'Dollar-denominated wallet', priority: 5 },
+  { id: 's3', name: 'Indie Hacker', understands: 'Basics', misses: 'Compute add-ons', wedge: 'Clearer Pro forecast + hard budget option', priority: 3 },
+  { id: 's4', name: 'Vibe Coder', understands: 'Almost nothing', misses: 'Almost everything', wedge: 'Plain-English dollar budget guardrails', priority: 3 },
   { id: 's5', name: 'PM Prototyper', understands: 'Some', misses: 'Compute model', wedge: 'Auto-archive branches', priority: 3 },
   { id: 's6', name: 'Non-Tech Founder', understands: 'Subscription billing', misses: 'Everything else', wedge: 'Embedded in Lovable/Bolt UI', priority: 5 },
   { id: 's7', name: 'Small Biz Owner', understands: 'Flat monthly', misses: 'Usage-based', wedge: 'Through agency channel', priority: 2 },
   { id: 's8', name: 'Agency', understands: 'All meters', misses: 'Multi-tenant model', wedge: 'Per-client invoicing API', priority: 3 },
   { id: 's9', name: 'Enterprise Innovation', understands: 'Compute + MAU', misses: 'Branching at QA scale', wedge: 'Committed-spend program', priority: 4 },
-  { id: 's10', name: 'AI-Native Startup', understands: 'Compute + vector', misses: 'Agent loop economics', wedge: 'AI Workloads add-on SKU', priority: 5 }
+  { id: 's10', name: 'AI-Native Startup', understands: 'Compute + vector', misses: 'Agent loop economics', wedge: 'AI workload guardrails, not a pgvector gate', priority: 4 }
 ];
 
 const THESES = [
@@ -329,11 +329,11 @@ const THESES = [
   },
   {
     id: 'B',
-    title: 'Credits may help newer builders, but only as a translation layer',
-    summary: 'Credits could make spend more legible for AI-assisted builders and small teams, but developer-visible meters should remain underneath. Credits should translate infrastructure economics, not hide them.',
-    why: 'Supabase already uses compute credits on paid organizations, so the concept exists in the billing grammar. Other AI-builder tools are also normalizing credits, wallets, and budget controls.',
-    risk: 'Credits can become confusing or feel like a dark pattern if customers cannot see what consumed them. They can also hide high-cost usage like egress, external model calls, or branch-heavy workflows.',
-    validate: 'Test wallet language, invoice explainers, dashboard credit burn-down, and warning copy before changing actual billing. Measure comprehension, free-to-paid conversion, support contacts, and downgrade behavior.',
+    title: 'Budget layers may help newer builders, but only if dollars stay visible',
+    summary: 'A dollar-denominated budget layer could make spend more legible for AI-assisted builders and small teams, but developer-visible meters should remain underneath. The goal is to translate infrastructure economics, not hide them behind fake currency.',
+    why: 'Supabase already uses credits and compute credits, so the concept exists in the billing grammar. Other AI-builder tools are also normalizing credits, budgets, and usage controls, but Supabase should keep dollars first.',
+    risk: 'A credit system can become confusing or feel like a dark pattern if it behaves like arbitrary points. It can also hide high-cost usage like egress, external model calls, or branch-heavy workflows.',
+    validate: 'Test dollar-budget language, invoice explainers, usage forecasts, and warning copy before changing actual billing. Measure comprehension, free-to-paid conversion, support contacts, and downgrade behavior.',
     confidence: 'Medium-high as a UX layer. Not proven as a full pricing architecture.',
     confidenceTone: 'emerald'
   },
@@ -362,10 +362,9 @@ const THESES = [
 
 const RECOMMENDED_TIERS = [
   { name: 'Free', price: '$0', target: 'Hobby, learning', credits: '$0', new: false, key: 'Generous; auto-pause 7d' },
-  { name: 'Builder', price: '$9', target: 'Vibe coders, indie ship', credits: '$5 wallet', new: true, key: 'Hard $9 cap, no overages' },
-  { name: 'Pro', price: '$25', target: 'Solo devs, early startups', credits: '$10 + $10 wallet', new: false, key: '5-year price-lock holds' },
-  { name: 'Scale', price: '$99', target: 'Growing B2B SaaS', credits: '$30 wallet', new: true, key: 'Fills the $25→$599 cliff' },
-  { name: 'Team', price: '$599', target: 'Multi-team, regulated', credits: '$100 wallet', new: false, key: 'HIPAA add-on, audit logs' },
+  { name: 'Pro', price: '$25', target: 'Solo devs, early startups', credits: '$10 compute credits', new: false, key: 'Hold the trust anchor' },
+  { name: 'Growth', price: 'TBD', target: 'Growing B2B SaaS, agencies', credits: 'Optional dollar budget', new: true, key: 'Validate the $25→$599 graduation path' },
+  { name: 'Team', price: '$599', target: 'Multi-team, regulated', credits: 'Governed org budget', new: false, key: 'Security, controls, support' },
   { name: 'Enterprise', price: 'Custom', target: 'Procurement, scale', credits: 'Negotiated', new: false, key: 'Committed annual spend' }
 ];
 
@@ -438,7 +437,7 @@ const Hero = () => (
         </p>
         <p className="text-stone-300">
           <span className="font-mono text-xs tracking-widest uppercase text-emerald-400/80 block mb-2">If you only read three lines</span>
-          One: vibe-coder bill shock is a brand event, not merely a billing event; telecom's <em>fair-use</em> primitive transfers, its <em>cost structure</em> does not. Two: the 24× cliff between $25 Pro and $599 Team creates whitespace for mid-stage B2B SaaS before enterprise controls are needed. Three: AI workloads (vector storage, branching for evals, agent loops) show up through generic infrastructure meters rather than as AI-specific spend; that is whitespace.
+          One: public bill shock is a product-trust event, not merely a billing event; telecom is useful as a trust-design lens, not an infrastructure pricing template. Two: the 24× cliff between $25 Pro and $599 Team is likely the higher-confidence commercial whitespace. Three: AI workloads show up through generic infrastructure meters, so the opportunity is forecasting and guardrails, not gating pgvector behind an AI SKU.
         </p>
       </div>
 
@@ -500,7 +499,7 @@ const SetupSection = () => (
             stat: '"Sign-up rate just doubled because of vibe coding." — Paul Copplestone, Fortune (April 2025).' },
           { tag: 'The Signal', head: 'The category is repricing — Supabase is the stable point.',
             body: 'Neon repriced raw Postgres infrastructure, Vercel moved toward active-usage economics, Google/Firebase normalized credits and calculators, Clerk simplified auth packaging in Feb 2026, and Railway/Replit/Lovable made credits the consumer language of AI-builder capacity. Supabase has held $25 since March 2021 while the field moves around it.',
-            stat: 'The market is splitting: raw infra price cuts underneath, credits and wallets above.' },
+            stat: 'The market is splitting: raw infra price cuts underneath, credits, budgets above.' },
           { tag: 'The Role', head: '"Rethink how we bill for compute. Unify credits."',
             body: 'The Ashby JD names the brief explicitly: lead company-wide initiatives that reshape monetization, rethink compute billing, unify credits, and design a pricing architecture that scales to whatever Supabase becomes. Reports into commercial leadership, partnered across PLG and enterprise.',
             stat: 'Job posting deadline March 30, 2026 — pipeline now in motion.' }
@@ -710,7 +709,7 @@ const Competitive = () => (
         num="04"
         label="The Field"
         title="The category is repricing — Supabase has held the line."
-        lead="Three simultaneous movements: raw infrastructure repricing (Neon, Cloudflare), active-usage pricing (Vercel), and AI-builder credit wallets (Google/Firebase, Railway, Replit, Lovable). Public bill-shock events like Cara show why spend controls are product trust. One stable point: Supabase $25 since March 2021."
+        lead="Three simultaneous movements: raw infrastructure repricing (Neon, Cloudflare), active-usage pricing (Vercel), and AI-builder budget controls (Google/Firebase, Railway, Replit, Lovable). Public bill-shock events like Cara show why spend controls are product trust. One stable point: Supabase $25 since March 2021."
       />
       <div className="overflow-x-auto scrollbar-thin">
         <table className="w-full min-w-[820px] text-sm">
@@ -1006,8 +1005,8 @@ function computeOutcome(persona, bundle) {
     else if (persona.id === 'enterprise') { verdict = "Enterprise doesn't want unlimited; they want a predictable line item with an SLA."; verdictTone = 'warn'; }
     else { verdict = 'Marketable, popular. Margin pressure on the long tail. Manageable only with strict cost-to-serve discipline.'; verdictTone = 'warn'; }
   } else if (bundle.id === 'workload-shaped') {
-    if (persona.id === 'vibe-coder') { verdict = "Wallet metaphor plus a dollar-denominated cap converts the bill into a number this buyer can model. Trust mechanism intact."; verdictTone = 'good'; }
-    else if (persona.id === 'ai-startup') { verdict = "AI Workloads add-on makes vector storage, branching, and agent loops legible on the invoice. Captured value, intentionally."; verdictTone = 'good'; }
+    if (persona.id === 'vibe-coder') { verdict = "A dollar budget with a hard cap converts the bill into a number this buyer can model. No fake currency required."; verdictTone = 'good'; }
+    else if (persona.id === 'ai-startup') { verdict = "AI workload guardrails make agent loops, eval branches, and heavy background jobs legible without gating pgvector or core Postgres capabilities."; verdictTone = 'good'; }
     else if (persona.id === 'b2b-saas') { verdict = "A Scale-tier hypothesis closes the $25 → $599 cliff. SSO included. Procurement-friendly motion."; verdictTone = 'good'; }
     else if (persona.id === 'enterprise') { verdict = "Committed Spend gives sales a procurement-friendly motion. EDP-style for larger commits."; verdictTone = 'good'; }
     else { verdict = "Familiar Pro experience plus optional add-ons at growth points. Path to expansion preserved."; verdictTone = 'good'; }
@@ -1023,7 +1022,7 @@ function metricReasons(persona, bundle, outcome) {
   return {
     predictability: `${persona.name} has ${vol}x volatility and ${highCost}/100 high-cost pressure. ${bundle.name} ${bundle.predictabilityModifier > 0.8 ? 'compresses the bill into a narrower forecastable range' : bundle.predictabilityModifier > 0.6 ? 'narrows the range but still leaves some exposed meters' : 'leaves most cost surfaces exposed'}.`,
     trust: `${persona.name} starts with ${literacy}/100 technical literacy. Trust rises when the bundle translates meters into a language this buyer recognizes; it falls when the buyer must understand compute, egress, branches, and retries directly.`,
-    billShock: `${bundle.name} ${bundle.billShockModifier < 0.3 ? 'reduces surprise by adding wallet/cap mechanics' : bundle.billShockModifier < 0.8 ? 'reduces some surprises but still leaves tail events' : 'keeps the heavy-tail risk mostly with the customer'}. Risk is amplified by ${vol}x volatility and non-human traffic patterns.`,
+    billShock: `${bundle.name} ${bundle.billShockModifier < 0.3 ? 'reduces surprise by adding dollar budget/cap mechanics' : bundle.billShockModifier < 0.8 ? 'reduces some surprises but still leaves tail events' : 'keeps the heavy-tail risk mostly with the customer'}. Risk is amplified by ${vol}x volatility and non-human traffic patterns.`,
     margin: `Supabase-side health starts from the bundle's margin posture, then adjusts down for volatile workloads and expensive surfaces like compute, egress, branching, and AI/vector usage. Higher customer predictability is not automatically better for margin.`
   };
 }
@@ -1041,15 +1040,15 @@ function bundleLeverRows(bundle) {
   const capStyle = bundle.id === 'metered' ? 'None by default'
     : bundle.id === 'capped' ? 'Quota / Spend Cap'
     : bundle.id === 'unlimited-fairuse' ? 'Fair-use throttle'
-    : 'Dollar wallet + workload caps';
+    : 'Dollar budget + workload guardrails';
   const buyerLanguage = bundle.id === 'metered' ? 'CU-hours, GB, MAU'
     : bundle.id === 'capped' ? 'Plan + included quotas'
     : bundle.id === 'unlimited-fairuse' ? 'One flat number'
-    : 'Credits, workloads, forecast';
+    : 'Dollars, forecasts, meters';
   const marginControl = bundle.id === 'metered' ? 'Strongest direct pass-through'
     : bundle.id === 'capped' ? 'Good if exclusions are clear'
     : bundle.id === 'unlimited-fairuse' ? 'Weak without hard throttles'
-    : 'Strong if wallet eligibility is scoped';
+    : 'Strong if eligibility is scoped and dollars stay visible';
   const failureMode = bundle.id === 'metered' ? 'Customer confusion'
     : bundle.id === 'capped' ? 'Exclusion-list surprise'
     : bundle.id === 'unlimited-fairuse' ? 'Heavy-tail abuse'
@@ -1182,23 +1181,23 @@ const MetersFlowDiagram = ({ bundleId }) => {
           <rect x={270} y={50} width={180} height={80} fill="rgba(125,211,168,0.08)" stroke="rgba(125,211,168,0.3)" rx="4" />
           <text x={360} y={72} textAnchor="middle" fontSize="10" fill="#7dd3a8" fontFamily="JetBrains Mono">COMPUTE</text>
           <text x={360} y={92} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">CPU · Edge Fns · Realtime</text>
-          <text x={360} y={112} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">draws from wallet</text>
+          <text x={360} y={112} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">budgeted in dollars</text>
 
           <rect x={490} y={50} width={180} height={80} fill="rgba(216,164,240,0.08)" stroke="rgba(216,164,240,0.4)" rx="4" />
-          <text x={580} y={72} textAnchor="middle" fontSize="10" fill="#d8a4f0" fontFamily="JetBrains Mono">AI WORKLOADS</text>
-          <text x={580} y={92} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">Vector · Branching · Agents</text>
-          <text x={580} y={112} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">add-on SKU</text>
+          <text x={580} y={72} textAnchor="middle" fontSize="10" fill="#d8a4f0" fontFamily="JetBrains Mono">AI GUARDRAILS</text>
+          <text x={580} y={92} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">Agents · Branches · Evals</text>
+          <text x={580} y={112} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">controls layer</text>
 
           <path d="M140 130 L260 200" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
           <path d="M360 130 L360 200" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
           <path d="M580 130 L460 200" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
 
           <rect x={240} y={205} width={240} height={60} fill="url(#walletGrad)" stroke="#7dd3a8" strokeWidth="1.5" rx="6" />
-          <text x={360} y={230} textAnchor="middle" fontSize="14" fill="#7dd3a8" fontFamily="Fraunces" fontWeight="600" fontStyle="italic">Unified Credit Wallet</text>
-          <text x={360} y={250} textAnchor="middle" fontSize="11" fill="#a8a29e" fontFamily="JetBrains Mono">$ — one number, top-up anytime</text>
+          <text x={360} y={230} textAnchor="middle" fontSize="14" fill="#7dd3a8" fontFamily="Fraunces" fontWeight="600" fontStyle="italic">Dollar Budget Layer</text>
+          <text x={360} y={250} textAnchor="middle" fontSize="11" fill="#a8a29e" fontFamily="JetBrains Mono">$ first, meters underneath</text>
 
           <path d="M360 265 L360 305" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
-          <text x={360} y={325} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">customer sees: $X</text>
+          <text x={360} y={325} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">customer sees: forecast + cap</text>
         </g>
       )}
     </svg>
@@ -1303,7 +1302,7 @@ const BundleBuilder = () => {
           </div>
 
           <p className="mt-3 font-body text-sm text-stone-500 leading-relaxed">
-            This is why Step 2 matters: the bundle selection changes the mechanism. It decides whether risk is passed through to the customer, stopped by a cap, flattened into a promise, or translated through a credit wallet and workload-specific controls.
+            This is why Step 2 matters: the bundle selection changes the mechanism. It decides whether risk is passed through to the customer, stopped by a cap, flattened into a promise, or translated through a dollar budget layer and workload-specific guardrails.
           </p>
         </div>
 
@@ -1348,7 +1347,7 @@ const BundleBuilder = () => {
             <div className="border border-stone-800 bg-stone-950/60 p-5">
               <Eyebrow className="mb-3">What Step 2 changed</Eyebrow>
               <p className="font-body text-sm text-stone-400 leading-relaxed">
-                {bundle.name} changes who absorbs uncertainty. Pure metering pushes it to the customer. Unlimited pushes it to Supabase. Spend Cap blocks some overages. Wallet + workload controls tries to translate the risk while keeping the meters visible.
+                {bundle.name} changes who absorbs uncertainty. Pure metering pushes it to the customer. Unlimited pushes it to Supabase. Spend Cap blocks some overages. Dollar budget + workload guardrails try to translate the risk while keeping the meters visible.
               </p>
             </div>
           </div>
@@ -1429,7 +1428,7 @@ const RecommendedModel = () => (
         num="09"
         label="Framework, Not Prescription"
         title="The architecture I'd validate. The numbers below are hypotheses, not commitments."
-        lead="What follows is the shape of the change I'd test, not the change I'd ship. Specific price points and quotas are placeholders pending real elasticity data — the Pro $25 headline is the only number I'd hold as a constraint going in. The structure (meters underneath, credits in the middle, plans on top) is what the JD describes; the calibration belongs to telemetry I don't have yet."
+        lead="What follows is the shape of the change I'd test, not the change I'd ship. Specific price points and quotas are placeholders pending real elasticity data — the Pro $25 headline is the only number I'd hold as a constraint going in. The structure I would validate is dollars first, meters underneath, and guardrails around volatile workloads. The calibration belongs to telemetry I don't have yet."
       />
 
       <div className="mb-8 p-5 border border-amber-700/40 bg-amber-950/20 max-w-3xl">
@@ -1437,9 +1436,23 @@ const RecommendedModel = () => (
           <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
           <p className="font-body text-sm text-stone-300 leading-relaxed">
             <span className="font-mono text-[10px] uppercase tracking-wider text-amber-400 block mb-2">Read this section as hypothesis, not proposal</span>
-            Specific tier names, price points, and quota numbers below are illustrative. They're benchmarked against external comparables (Lovable Pro at $25/100 credits, Replit Pro with $100 monthly credits, Railway usage credits, Google/Firebase credits and calculators, Vercel Pro at $20+credits, Clerk Pro at $20 annual/$25 monthly + MRU) but would require fake-door tests, customer interviews, and elasticity modeling on Supabase data before I'd defend any of them as a final proposal.
+            Specific tier names, price points, and quota numbers below are illustrative. External comparables show credits, budgets, and usage controls becoming familiar, but I would not introduce arbitrary Supabase Points. Any budget layer should remain dollar-denominated, invoice-transparent, and reversible before I would defend it as a final proposal.
           </p>
         </div>
+      </div>
+
+      <div className="mb-8 grid md:grid-cols-2 gap-px bg-stone-800/60 border border-stone-800/60 max-w-5xl">
+        {[
+          ['No fake currency', 'A budget layer should show dollars first, then the meters underneath. If it behaves like arbitrary points, it fails.'],
+          ['No telecom cosplay', 'Telecom is a trust-design analogy, not a cost model. I would not copy unlimited plans or deprioritization into production database workflows.'],
+          ['No pgvector gate', 'pgvector is a Postgres capability. AI workload packaging should focus on forecasting, controls, and safe defaults, not gating core features.'],
+          ['No hobbyist over-index', 'AI-assisted builders matter because they change acquisition and volatility. The higher-confidence commercial question is still Pro-to-Team graduation.']
+        ].map(([h, body]) => (
+          <div key={h} className="bg-stone-950 p-5">
+            <div className="font-mono text-[10px] uppercase tracking-wider text-amber-300 mb-2">{h}</div>
+            <p className="font-body text-sm text-stone-400 leading-relaxed">{body}</p>
+          </div>
+        ))}
       </div>
 
       <div className="space-y-px bg-stone-800/60 border border-stone-800/60">
@@ -1466,15 +1479,15 @@ const RecommendedModel = () => (
           <div className="grid grid-cols-12 gap-4 items-center">
             <div className="col-span-12 md:col-span-2 flex items-center gap-2">
               <BrainCircuit size={20} className="text-purple-300" />
-              <span className="font-display text-xl text-stone-100">AI Workloads</span>
+              <span className="font-display text-xl text-stone-100">AI Workload Guardrails</span>
             </div>
             <div className="col-span-4 md:col-span-2">
-              <div className="font-display text-xl text-purple-300 num-display">+$49–$299</div>
-              <div className="font-mono text-[10px] text-stone-500">add-on (range pending data)</div>
+              <div className="font-display text-xl text-purple-300 num-display">TBD</div>
+              <div className="font-mono text-[10px] text-stone-500">no gate; price TBD</div>
             </div>
-            <div className="col-span-8 md:col-span-3 font-body text-stone-300 text-sm">AI-native startups, RAG, agents</div>
+            <div className="col-span-8 md:col-span-3 font-body text-stone-300 text-sm">AI-native startups, RAG, agents, eval branches</div>
             <div className="col-span-12 md:col-span-5 font-body text-xs text-stone-400 italic">
-              Vector storage uplift, branching pack, edge-function inference budget, agent rate limits, index advisor. The intent is to make AI cost legible on the invoice; the calibration is empirical.
+              Forecasting, branch controls, agent rate limits, anomaly alerts, and index guidance. This should not gate pgvector or core Postgres capabilities; the intent is cost clarity and safety, not an AI tax.
             </div>
           </div>
         </div>
@@ -1490,13 +1503,13 @@ const RecommendedModel = () => (
         <div>
           <Eyebrow className="mb-3">What I'd structurally change</Eyebrow>
           <p className="font-body text-stone-300 leading-relaxed">
-            Unified credit/wallet primitive (the explicit JD ask). Spend Cap converted to dollar-denominated and the exclusion list shrunk. Mid-tier between $25 and $599. AI workloads broken out as a discrete SKU.
+            Dollar-denominated budget layer, not fake currency. Spend Cap made clearer and the exclusion list reduced where feasible. A validated Growth path between $25 and $599. AI workload guardrails without gating pgvector or core Postgres features.
           </p>
         </div>
         <div>
           <Eyebrow className="mb-3">What I'd test before shipping</Eyebrow>
           <p className="font-body text-stone-300 leading-relaxed">
-            Builder-tier price elasticity (fake-door at $9 vs $12 vs $15). Scale-tier feature set and price ($79 / $99 / $129). AI Workloads bundle composition with 30–50 RAG/agent customers in a private beta. Wholesale economics with one named partner.
+            Growth-tier feature set and price between Pro and Team. Dollar-budget comprehension tests versus plain usage alerts. AI workload guardrail prototypes with 30–50 RAG/agent customers. Wholesale economics with one named partner.
           </p>
         </div>
       </div>
@@ -1530,7 +1543,7 @@ const KelvinBridge = () => (
             wins: ['Made Billing & Benefits T-Mobile\'s #1 digital property by engagement',
                    '+204% YoY one-time payment completion; +76% recurring payment setup',
                    '+23% CLV in 12 months; Mintel Best Wireless Billing 2019; highest ACSI in the industry. Promoted 3 PMs to Senior, hired 3 interns who converted to FT'],
-            tieIn: 'The Spend Cap UX redesign, dollar-denominated wallet, in-product cost forecasts, billing NPS — that is the surface I have built before, with measurable results.' },
+            tieIn: 'The Spend Cap UX redesign, dollar-denominated budgets, in-product cost forecasts, billing NPS — that is the surface I have built before, with measurable results.' },
           { era: 'Apr 2022 – Sep 2023', company: 'Amazon Prime Worldwide Engagement', role: 'Senior Manager, L7 PMT',
             relevance: 'Self-serve control plane, governance at scale',
             wins: ['Authored PR/FAQ; led delivery of a global engagement platform reducing journey launch from 4 weeks → 4 hours',
@@ -1592,11 +1605,11 @@ const Soundbites = () => {
     'The mistake is copying telecom\'s cost structure. The right move is borrowing telecom\'s trust posture.',
     'Pricing is the most-used surface in any subscription product. At T-Mobile we treated it as a product.',
     'Hold the $25 like T-Mobile holds Price Lock.',
-    'The bill should never tell you about a meter the wallet didn\'t already warn you about.',
+    'The bill should never tell you about a meter the product didn\'t already warn you about.',
     'The marketing can be unlimited-feeling. The economics shouldn\'t be.',
     'I am the customer of the customer.',
     'Don\'t promise unlimited. Do promise predictability.',
-    'I\'d rather argue 80% of the T-Mobile playbook transfers than claim I\'m the obvious database pricing PM.',
+    'I would not import the T-Mobile playbook; I would use it to ask better questions about trust, comprehension, and expansion.',
     'Compute is the meter that surprises everyone, yet it\'s the most opaque. That\'s the bet of this hire.',
     'Spend Cap is the right primitive. The opportunity is to make it dollar-denominated and shrink the exclusion list.'
   ];
@@ -1623,7 +1636,7 @@ const ValidationPlan = () => {
       tag: 'Days 31–60',
       title: 'Customer interviews and competitive baseline',
       bullets: [
-        '30 customer interviews across the segment map: 6 vibe coders via Lovable / Bolt referrals, 6 indie devs, 6 mid-stage B2B SaaS, 6 AI-native, 6 enterprise.',
+        '30 customer interviews weighted toward monetization: 4 AI-assisted builders, 4 indie devs, 8 mid-stage B2B SaaS or agencies, 6 AI-native startups, 8 Team / Enterprise buyers.',
         'Three core questions per interview: walk me through your last surprise bill. Walk me through how you decided whether to upgrade. What would make you migrate, and to whom?',
         'External pricing comparables refresh — Neon, Vercel, Google/Firebase, Railway, Replit, Lovable, Clerk, Cloudflare. Triangulate on what features get bundled at what price points by stage of buyer.',
         'Internal write-up: prioritized list of the three to five highest-leverage pricing moves, with supporting evidence and risk register.'
@@ -1633,9 +1646,9 @@ const ValidationPlan = () => {
       tag: 'Days 61–90',
       title: 'Test, not ship',
       bullets: [
-        'Fake-door tests on the highest-priority hypotheses — pricing-page CTR on a Builder $9 tier card, on a Scale $99 tier card, on an AI Workloads add-on. Measured against control.',
+        'Fake-door tests on the highest-priority hypotheses — pricing-page CTR on a Growth-tier card, dollar-budget language, and AI workload guardrails. Measured against control.',
         'In-product cost-forecast prototype shown to a held-out cohort. Measure: does the dollar-denominated projection reduce surprise-bill incidence in the next billing cycle?',
-        'AI Workloads private beta: 30–50 RAG / agent customers, six-month telemetry window, gross-margin and NPS measured against control.',
+        'AI workload guardrails private beta: 30–50 RAG / agent customers, six-month telemetry window, gross-margin and NPS measured against control.',
         'Recommendation memo to founders + commercial leadership at day 90. Three recommendations, with evidence, risk register, and a rollback plan for each.'
       ]
     }
@@ -1691,7 +1704,7 @@ const ValidationPlan = () => {
               {['Monthly billing-NPS and surprise-bill-incidence review with founders.',
                 'Quarterly pricing experiment readout — what was tested, what shipped, what was killed.',
                 'Bi-weekly pricing-tickets triage with support and engineering, with explicit decision rights.',
-                'Annual pricing audit cadence — once the wallet primitive is in place, run a structural review every 12 months, not every 6 like Vercel.'].map((line, i) => (
+                'Annual pricing audit cadence — once the budget and guardrail primitives are validated, run a structural review every 12 months, not every 6 like Vercel.'].map((line, i) => (
                 <li key={i} className="flex gap-3">
                   <Check size={14} className="text-emerald-400/70 flex-shrink-0 mt-1" />
                   <span>{line}</span>
