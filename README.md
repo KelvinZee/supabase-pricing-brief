@@ -21,6 +21,5 @@ Kelvin Zee · Seattle, WA · kelvinz@gmail.com · [linkedin.com/in/kelvinz](http
 
 ## Notes on this version
 
-- Vw Every recommendation is presented as a hypothesis to validate against Supabase's internal data, not a prescription.
+- Every recommendation is presented as a hypothesis to validate against Supabase's internal data, not a prescription.
 - Specific tier prices and quotas are illustrative, benchmarked against external comparables. They would require fake-door tests and customer interviews on Supabase data before being defended as final.
-- Sources verified April 2026
