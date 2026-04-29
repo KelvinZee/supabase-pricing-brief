@@ -294,11 +294,13 @@ const COMPETITORS = [
   { name: 'Neon (Databricks)', headline: '$0.106/CU-hr Launch · $0.222 Scale', meter: 'Serverless CU-hr, scale-to-zero', free: '100 CU-hrs/proj', recent: 'Acquired May 2025; storage cut 80%, free doubled', flag: 'aggressive' },
   { name: 'PlanetScale', headline: '$39 Scaler floor', meter: 'Cluster-size, predictable', free: 'Killed Hobby Apr 2024', recent: 'Removed free tier; trust damage persists', flag: 'cautionary' },
   { name: 'Vercel', headline: '$20/seat Pro + $20 credit', meter: 'Active CPU + Provisioned Memory (Fluid)', free: 'Hobby (non-commercial)', recent: 'Active CPU launched Jun 2025; up to 90% AI-workload savings', flag: 'rapid-iteration' },
-  { name: 'Firebase Blaze', headline: 'Pay-as-you-go', meter: 'Reads, writes, MAU, SMS', free: 'Spark (daily quotas)', recent: 'SMS-auth bill-shock category meme', flag: 'cautionary' },
-  { name: 'Clerk', headline: '$25 + $0.02/MAU', meter: 'MAU + B2B MAO', free: '10K MAU', recent: 'Repriced 2024 for indie devs', flag: 'reference' },
+  { name: 'Firebase Blaze', headline: 'Spark + Blaze + $300 credit', meter: 'Reads, writes, storage, SMS', free: 'Spark no-cost quotas', recent: 'Calculator + credits; still a bill-shock caution', flag: 'cautionary' },
+  { name: 'Railway', headline: 'Usage wallet', meter: 'Resources + agent usage credits', free: '$5 Hobby / credits', recent: 'Hard limits and credit-led builder UX', flag: 'rapid-iteration' },
+  { name: 'Replit', headline: '$25 Core / $100 Pro', meter: 'Monthly credits + Agent modes', free: 'Daily Agent credits', recent: 'Pro includes $100 monthly credits and pooled controls', flag: 'rapid-iteration' },
+  { name: 'Lovable', headline: '$25 Pro / 100 credits', meter: 'Cloud + AI credits', free: '5 daily credits', recent: 'Credits, rollover, top-ups; no overages by default', flag: 'reference' },
+  { name: 'Clerk', headline: '$20–$25 Pro + MRU', meter: 'Monthly retained users + orgs', free: '50K MRU/app', recent: 'Feb 2026: 50K free, unlimited apps, Pro starts $20 annual', flag: 'aggressive' },
   { name: 'Cloudflare Workers', headline: '$5 Workers Paid', meter: 'Reqs + CPU-ms; zero egress', free: '100K reqs/day', recent: 'R2 zero-egress reset category expectations', flag: 'aggressive' },
-  { name: 'Cursor', headline: '$20 Pro / $40 Business', meter: 'Per-seat + AI-call usage', free: 'Hobby', recent: '$2.3B raise, $29.3B valuation Nov 2025', flag: 'reference' },
-  { name: 'Render', headline: '$7–$30/svc', meter: 'Per-instance flat', free: 'Limited', recent: 'Heroku-like predictability play', flag: 'reference' }
+  { name: 'Cursor', headline: '$20 Pro / $40 Business', meter: 'Per-seat + AI-call usage', free: 'Hobby', recent: '$2.3B raise, $29.3B valuation Nov 2025', flag: 'reference' }
 ];
 
 const SEGMENTS = [
@@ -404,20 +406,20 @@ const Hero = () => (
 
       <div className="max-w-3xl space-y-5 text-stone-300 font-body text-lg leading-relaxed anim-fade-up" style={{animationDelay: '0.2s'}}>
         <p>
-          Prepared by <span className="text-stone-100">Kelvin Zee</span> ahead of an interview for the Product Manager, Pricing &amp; Billing role. 18 years in subscription pricing and billing platforms — T-Mobile postpaid packaging through the T-Mobile ONE transition (postpaid 56.8M&nbsp;→&nbsp;75.6M, 2015–2017), the digital transformation of T-Mobile Billing &amp; Benefits (+204% YoY one-time payment completion, +23% CLV, Mintel Best Wireless Billing 2019), and Amazon Prime's Worldwide Engagement control plane (30M+ monthly benefit utilizations across 26 countries, +23% renewals at peak).
+          Prepared by <span className="text-stone-100">Kelvin Zee</span> for Supabase, Pricing &amp; Billing role. 18 years in subscription pricing and billing platforms across T-Mobile postpaid packaging and billing surfaces through the T-Mobile ONE transition, the digital transformation of T-Mobile Billing &amp; Benefits (+204% YoY one-time payment completion, +23% CLV, Mintel Best Wireless Billing 2019), and Amazon Prime's Worldwide Engagement control plane (30M+ monthly benefit utilizations across 26 countries, +23% renewals at peak).
         </p>
         <p>
           This brief is a measured read of where the current architecture creates customer trust and where it leaks, framed against the buyer-base shift driving the next decision. Every recommendation is presented as a hypothesis to validate against Supabase's internal data, not a prescription to ship. The structure is built to be skimmed in three minutes, read in fifteen, or worked through end-to-end across a panel.
         </p>
         <p className="text-stone-300">
           <span className="font-mono text-xs tracking-widest uppercase text-emerald-400/80 block mb-2">If you only read three lines</span>
-          One: vibe-coder bill shock is a brand event, not a billing event — telecom's <em>fair-use</em> primitive transfers; its <em>cost structure</em> does not. Two: the 24× cliff between $25 Pro and $599 Team is leaking mid-stage B2B SaaS to Neon and Render. Three: AI workloads (vector storage, branching for evals, agent loops) are absorbed into compute and invisible on the invoice — that's whitespace.
+          One: vibe-coder bill shock is a brand event, not a billing event; telecom's <em>fair-use</em> primitive transfers, its <em>cost structure</em> does not. Two: the 24× cliff between $25 Pro and $599 Team creates whitespace for mid-stage B2B SaaS before enterprise controls are needed. Three: AI workloads (vector storage, branching for evals, agent loops) are absorbed into compute and invisible on the invoice; that's whitespace.
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-stone-800/60 mt-16 border border-stone-800/60 anim-fade-up" style={{animationDelay: '0.3s'}}>
         {[
-          { num: '~5M', label: 'Developers on Supabase', sub: 'Copplestone, Nov 2025 podcast' },
+          { num: '~7M', label: 'Developers on Supabase', sub: 'Copplestone, Apr 2026 LinkedIn' },
           { num: '$5B', label: 'Series E valuation, Oct 2025', sub: 'Reportedly raising at ~$10B (Sacra)' },
           { num: '$25', label: 'Pro plan headline, unchanged', sub: 'Held since March 2021' },
           { num: '9', label: 'Distinct meters on one invoice', sub: 'Compute, MAU, egress, branching, vector …' }
@@ -433,9 +435,9 @@ const Hero = () => (
       {/* How to read this navigator */}
       <div className="mt-16 grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60 anim-fade-up" style={{animationDelay: '0.35s'}}>
         {[
-          { tag: '3-minute read', heading: 'Recruiter / first pass', body: 'This page plus §01 (the setup) and §10 (framework I\'d validate). The thesis and the calibration of confidence on it.' },
-          { tag: '15-minute read', heading: 'Hiring manager', body: 'Add §07 (four theses, with verdicts), §09 (interactive Bundle Builder), §11 (90-day validation plan). The reasoning and the sequencing.' },
-          { tag: 'Full brief', heading: 'Panel / deep read', body: 'All sections including telecom evolution analysis, segment map, competitive landscape, and §12 (open questions I\'d ask Supabase).' }
+          { tag: '3-minute read', heading: 'High Level', body: 'This page plus §01 (the setup) and §10 (framework I\'d validate). The thesis and the calibration of confidence on it.' },
+          { tag: '15-minute read', heading: 'Recommendations', body: 'Add §07 (four theses, with verdicts), §09 (interactive Bundle Builder), §11 (90-day validation plan). The reasoning and the sequencing.' },
+          { tag: 'Full brief', heading: 'Deep read', body: 'All sections including telecom evolution analysis, segment map, competitive landscape, and §12 (open questions I\'d ask Supabase).' }
         ].map((row, i) => (
           <div key={i} className="bg-stone-950 p-6">
             <Eyebrow className="mb-3 text-emerald-400/80">{row.tag}</Eyebrow>
@@ -469,11 +471,11 @@ const SetupSection = () => (
       <div className="grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60">
         {[
           { tag: 'The Shift', head: 'AI-assisted builders are the new top of funnel.',
-            body: 'Lovable closed $330M at a $6.6B valuation (December 2025). Cursor sits at a $29.3B valuation. Bolt, Replit, Cursor, and Lovable all auto-provision Supabase. A meaningful share of new sign-ups are not engineers and have limited intuition for backend cost.',
+            body: 'Lovable, Bolt, Cursor, and Replit are now meaningful AI-builder distribution surfaces, but they shape Supabase demand differently. Lovable has a native Supabase path, Bolt supports Supabase but also offers its own default database flow, and Cursor connects through Supabase MCP. A meaningful share of new sign-ups are not engineers and have limited intuition for backend cost.',
             stat: '"Sign-up rate just doubled because of vibe coding." — Paul Copplestone, Fortune (April 2025).' },
           { tag: 'The Signal', head: 'The category is repricing — Supabase is the stable point.',
-            body: 'Neon (acquired by Databricks May 2025) cut compute 15–25% and storage 80%. Vercel introduced Active CPU pricing in June 2025, saving customers up to 90% on AI workloads but creating short-term communication friction. PlanetScale killed its Hobby tier in April 2024 and lost meaningful developer trust. Supabase has held $25 since March 2021.',
-            stat: 'ARR $30M → $70M (end-2024 → August 2025). Sacra estimate.' },
+            body: 'Neon repriced raw Postgres infrastructure, Vercel moved toward active-usage economics, Clerk simplified auth packaging in Feb 2026, and Railway/Replit/Lovable made credits the consumer language of AI-builder capacity. Supabase has held $25 since March 2021.',
+            stat: 'The market is splitting: raw infra price cuts underneath, credits and wallets above.' },
           { tag: 'The Role', head: '"Rethink how we bill for compute. Unify credits."',
             body: 'The Ashby JD names the brief explicitly: lead company-wide initiatives that reshape monetization, rethink compute billing, unify credits, and design a pricing architecture that scales to whatever Supabase becomes. Reports into commercial leadership, partnered across PLG and enterprise.',
             stat: 'Job posting deadline March 30, 2026 — pipeline now in motion.' }
@@ -590,10 +592,6 @@ const TelecomTimeline = () => {
             </ul>
           </div>
         </div>
-
-        <PullQuote attribution="Verdict, used measuredly">
-          A useful psychology and storytelling frame. A misleading cost-structure prescription. Both held at the same time.
-        </PullQuote>
       </div>
     </section>
   );
@@ -687,7 +685,7 @@ const Competitive = () => (
         num="04"
         label="The Field"
         title="The category is repricing — Supabase has held the line."
-        lead="Two simultaneous movements: aggressive usage-based undercutting (Neon, Cloudflare) and rapid pricing iteration (Vercel) producing mixed market reception. Two trust missteps (PlanetScale, Firebase). One stable point — Supabase $25 since March 2021."
+        lead="Three simultaneous movements: raw infrastructure repricing (Neon, Cloudflare), active-usage pricing (Vercel), and AI-builder credit wallets (Railway, Replit, Lovable). Two trust warnings remain: PlanetScale and Firebase. One stable point: Supabase $25 since March 2021."
       />
       <div className="overflow-x-auto scrollbar-thin">
         <table className="w-full min-w-[820px] text-sm">
@@ -730,12 +728,15 @@ const Competitive = () => (
           </tbody>
         </table>
       </div>
-      <div className="mt-10 grid md:grid-cols-2 gap-8 font-body text-stone-300 leading-relaxed">
+      <div className="mt-10 grid md:grid-cols-3 gap-8 font-body text-stone-300 leading-relaxed">
         <p>
-          <span className="font-display italic text-stone-100">Neon's absorption into Databricks</span> is the most consequential pricing event of 2025 for the Postgres-platform category. They now hold the cheapest per-CU-hour compute, the cheapest storage in the category, scale-to-zero, and Enterprise features bundled into the Scale tier — funded in part by Databricks' AWS hyperscaler leverage. Supabase cannot win on raw price-per-CU and should not try. The competitive answer is differentiated workload packaging and the unified credit primitive named in the JD.
+          <span className="font-display italic text-stone-100">Neon's absorption into Databricks</span> is one of the most consequential pricing events of 2025 for the Postgres-platform category. Neon now has one of the most aggressive raw compute and storage price positions in the category, plus scale-to-zero and more enterprise features in Scale. Supabase cannot win only on raw price-per-CU and should not try. The competitive answer is differentiated workload packaging and the unified credit primitive named in the JD.
         </p>
         <p>
-          <span className="font-display italic text-stone-100">Vercel's Active CPU pricing</span> (June 2025) is more nuanced than "cautionary tale." It saved AI-workload customers up to 90% on idle time, and 75% of Vercel function invocations now run on Fluid compute. The friction was communication and migration overhead, not the economics. Worth noting Supabase and Vercel are increasingly cooperative — the Vercel CLI now provisions Supabase projects in under sixty seconds with unified billing. The competitive frame is partial overlap, not zero-sum.
+          <span className="font-display italic text-stone-100">Vercel's Active CPU pricing</span> (June 2025) is more nuanced than "cautionary tale." It saved AI-workload customers up to 90% on idle time, and 75% of Vercel function invocations now run on Fluid compute. The friction was communication and migration overhead, not the economics. Worth noting Supabase and Vercel are increasingly cooperative; the Vercel Marketplace path can provision Supabase quickly with unified billing. The competitive frame is partial overlap, not zero-sum.
+        </p>
+        <p>
+          <span className="font-display italic text-stone-100">The newer pricing primitive is credits.</span> Railway, Replit, and Lovable make complex AI, agent, and cloud consumption feel like a wallet instead of a cloud bill. Clerk's Feb 2026 pricing reset shows the same simplification instinct in identity: expand the free wedge, make the entry point easier to understand, then monetize scale, governance, and advanced controls.
         </p>
       </div>
     </div>
@@ -753,7 +754,7 @@ const AIShift = () => (
         num="05"
         label="The Customer"
         title="The buyer changed. The pricing didn't."
-        lead="AI-assisted builders are now Supabase's largest acquisition channel. Most cannot read a CU-hour invoice."
+        lead="AI-assisted builders are one of Supabase's fastest-growing acquisition channels. Most cannot read a CU-hour invoice."
       />
       <div className="grid md:grid-cols-5 gap-px bg-stone-800/60 border border-stone-800/60 mb-12">
         <div className="bg-stone-950 p-8 md:col-span-2">
@@ -762,15 +763,15 @@ const AIShift = () => (
             Lovable, Bolt, Cursor are the new top of funnel.
           </h3>
           <p className="font-body text-stone-400 leading-relaxed text-sm">
-            Lovable: $330M Series B at a $6.6B valuation (December 2025), $200M+ ARR, 25M+ projects, native Supabase as default backend (docs.lovable.dev). Bolt.new auto-provisions Supabase. Cursor's "Connect to Supabase" is one click — and Cursor itself is now at a $29.3B valuation (November 2025), a different scale of distribution channel from where the original developer-platform pricing model was set.
+            Lovable has a native Supabase integration and Lovable Cloud uses Supabase's open-source foundation. Bolt supports Supabase, but current flows may default to Bolt databases before a Supabase migration. Cursor connects to Supabase through MCP. These tools do not all provision Supabase by default; the strategic point is that AI-builder interfaces increasingly shape the customer's first backend decision.
             <br /><br />
-            The user who arrives via these tools <em className="text-stone-200">never sees a Supabase signup funnel</em> — and the pricing-page assumptions that worked for direct-acquisition engineers don't fully transfer.
+            The user who arrives via these tools may <em className="text-stone-200">never start with a Supabase signup funnel</em>, and the pricing-page assumptions that worked for direct-acquisition engineers don't fully transfer.
           </p>
         </div>
         <div className="bg-stone-950 p-8 md:col-span-3 grid grid-cols-2 gap-6">
           {[
-            { num: '~5M', label: 'Developers on Supabase', sub: 'Copplestone podcast, Nov 2025' },
-            { num: '25M+', label: 'Lovable projects (Dec 2025)', sub: 'Default to Supabase backend' },
+            { num: '~7M', label: 'Developers on Supabase', sub: 'Copplestone Linkedin, April 2026' },
+            { num: '25M+', label: 'Lovable projects (Dec 2025)', sub: 'Native Supabase path, not universal default' },
             { num: '$96K', label: "Cara's 1-week Vercel bill (Jun 2024)", sub: '40K → 650K users; 56M invocations/day' },
             { num: '494', label: 'GB-hours / 12 days, single AI agent', sub: 'Vercel Puppeteer community report' }
           ].map((s, i) => (
@@ -1255,7 +1256,7 @@ const RecommendedModel = () => (
           <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
           <p className="font-body text-sm text-stone-300 leading-relaxed">
             <span className="font-mono text-[10px] uppercase tracking-wider text-amber-400 block mb-2">Read this section as hypothesis, not proposal</span>
-            Specific tier names, price points, and quota numbers below are illustrative. They're benchmarked against external comparables (Lovable Starter at $20, Linear Plus at $20/seat, Vercel Pro at $20+credit, Clerk at $25+MAU) but would require fake-door tests, customer interviews, and elasticity modeling on Supabase data before I'd defend any of them as a final proposal.
+            Specific tier names, price points, and quota numbers below are illustrative. They're benchmarked against external comparables (Lovable Pro at $25/100 credits, Replit Pro with $100 monthly credits, Vercel Pro at $20+credits, Clerk Pro at $20 annual/$25 monthly + MRU) but would require fake-door tests, customer interviews, and elasticity modeling on Supabase data before I'd defend any of them as a final proposal.
           </p>
         </div>
       </div>
@@ -1332,15 +1333,15 @@ const KelvinBridge = () => (
       <SectionHeader
         num="12"
         label="Why This Profile"
-        title="Three subscription-pricing arcs, lived end-to-end, at consumer scale."
+        title="Three subscription-pricing arcs, carried at consumer scale."
         lead="The candidate read I'd offer Supabase: not the deepest database PM available — the senior product leader who has carried analogous transitions before, with measurable P&amp;L impact and the operating mechanisms to land them."
       />
       <div className="grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60">
         {[
           { era: 'Dec 2015 – Jan 2017', company: 'T-Mobile Postpaid Subscription', role: 'Senior PM, Subscription Product',
-            relevance: 'The metered → unlimited transition, owned end-to-end',
-            wins: ['Designed packaging for T-Mobile ONE — the canonical metered-to-unlimited consumer pricing pivot',
-                   'Postpaid base 56.8M → 75.6M during the period (T-Mobile US 8-K filings)',
+            relevance: 'Product work through a metered → unlimited transition',
+            wins: ['Supported packaging and billing surfaces for T-Mobile ONE, the canonical metered-to-unlimited consumer pricing pivot',
+                   'Worked during a period of material total-customer growth and Un-carrier pricing shift (T-Mobile US filings)',
                    'Built bundled value-adds (Netflix, international roaming, inflight Wi-Fi) — partner-economics motion analogous to a Supabase / R2 / Resend bundle'],
             tieIn: 'Direct precedent for the customer-side narrative Supabase will need to write for the next pricing change. The pattern transfers; the cost structure does not.' },
           { era: 'Jan 2017 – Mar 2022', company: 'T-Mobile Billing & Benefits', role: 'Senior Manager, Customer Engagement PM',
@@ -1443,7 +1444,7 @@ const ValidationPlan = () => {
       bullets: [
         '30 customer interviews across the segment map: 6 vibe coders via Lovable / Bolt referrals, 6 indie devs, 6 mid-stage B2B SaaS, 6 AI-native, 6 enterprise.',
         'Three core questions per interview: walk me through your last surprise bill. Walk me through how you decided whether to upgrade. What would make you migrate, and to whom?',
-        'External pricing comparables refresh — Neon, Vercel, Render, Firebase, Cloudflare. Triangulate on what features get bundled at what price points by stage of buyer.',
+        'External pricing comparables refresh — Neon, Vercel, Railway, Replit, Lovable, Firebase, Clerk, Cloudflare. Triangulate on what features get bundled at what price points by stage of buyer.',
         'Internal write-up: prioritized list of the three to five highest-leverage pricing moves, with supporting evidence and risk register.'
       ]
     },
@@ -1617,12 +1618,12 @@ const Footer = () => (
         <div>
           <Eyebrow className="mb-3">Sources &amp; method</Eyebrow>
           <div className="font-body text-xs text-stone-400 leading-relaxed">
-            Supabase pricing pages and docs (billing-on-supabase, manage-your-usage, org-based-billing, billing-faq). Sacra ARR estimates. TechCrunch, Fortune, getlatka, UI Bakery, MetaCTO, CheckThat. Vendor pricing pages and changelogs: Neon, Vercel, PlanetScale, Firebase, Clerk, Cloudflare, Render, Cursor, Lovable. T-Mobile US 8-K filings (2016–2017). Verified April 2026; figures may move quickly in this category.
+            Supabase pricing pages and docs (billing-on-supabase, manage-your-usage, org-based-billing, billing-faq). Sacra ARR estimates. TechCrunch, Fortune, getlatka, UI Bakery, MetaCTO, CheckThat. Vendor pricing pages and changelogs: Neon, Vercel, PlanetScale, Firebase, Clerk, Cloudflare, Railway, Replit, Cursor, Lovable. T-Mobile US filings and public materials. Re-verified April 29, 2026; figures may move quickly in this category.
           </div>
         </div>
       </div>
       <div className="font-mono text-[10px] text-stone-600 tracking-widest pt-8 border-t border-stone-900 flex justify-between">
-        <span>§ END OF BRIEF — v2 (RECRUITER-PRIMARY)</span>
+        <span>§ v2 </span>
         <span>APR 2026</span>
       </div>
     </div>
