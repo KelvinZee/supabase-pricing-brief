@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Supabase Pricing &amp; Billing — Strategic Brief · Kelvin Zee</title>
+<meta name="description" content="Interactive pricing strategy brief and Build Your Bundle tool for Supabase Pricing & Billing PM interview." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Newsreader:opsz,ital,wght@6..72,0,300;6..72,0,400;6..72,0,500;6..72,0,600;6..72,1,300;6..72,1,400&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          stone: {
+            50:'#fafaf9', 100:'#f5f5f4', 200:'#e7e5e4', 300:'#d6d3d1',
+            400:'#a8a29e', 500:'#78716c', 600:'#57534e', 700:'#44403c',
+            800:'#292524', 850:'#1c1917', 900:'#1c1917', 950:'#0c0a09'
+          }
+        },
+        fontFamily: {
+          display: ['Fraunces', 'Georgia', 'serif'],
+          body: ['Newsreader', 'Georgia', 'serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  html { scroll-behavior: smooth; }
+  body { background: #0c0a09; color: #fafaf9; font-family: 'Newsreader', Georgia, serif; }
+
+  .font-display { font-family: 'Fraunces', Georgia, serif; font-feature-settings: 'ss01' on, 'ss02' on; letter-spacing: -0.02em; }
+  .font-body { font-family: 'Newsreader', Georgia, serif; }
+  .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-feature-settings: 'zero' on, 'ss02' on; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pulseSoft { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  .anim-fade-up { animation: fadeUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .anim-fade-in { animation: fadeIn 0.6s ease-out both; }
+  .anim-pulse-soft { animation: pulseSoft 3s ease-in-out infinite; }
+
+  .grain-overlay { position: relative; }
+  .grain-overlay::after {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/></svg>");
+    opacity: 0.035; mix-blend-mode: overlay;
+  }
+  .grain-overlay > * { position: relative; z-index: 1; }
+
+  .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(120,120,120,0.25); border-radius: 3px; }
+
+  .editorial-rule { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent); }
+
+  .num-display { font-feature-settings: 'tnum' on, 'lnum' on; font-variant-numeric: tabular-nums lining-nums; }
+
+  .ring-inset-emerald { box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.4); }
+
+  /* Print styles */
+  @media print {
+    body { background: white; color: black; }
+    .grain-overlay::after { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useEffect } = React;
+
+/* ============================================================
+   ICON COMPONENTS (subset of lucide, inlined as SVG)
+   ============================================================ */
+
+const I = ({ children, size = 16, className = '', stroke = 2 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"
+       className={className}>{children}</svg>
+);
+
+const Sparkles = (p) => <I {...p}>
+  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+  <path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>
+</I>;
+
+const Code2 = (p) => <I {...p}>
+  <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+</I>;
+
+const Building2 = (p) => <I {...p}>
+  <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
+  <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>
+  <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/>
+  <path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>
+</I>;
+
+const Bot = (p) => <I {...p}>
+  <path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/>
+  <path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
+</I>;
+
+const Briefcase = (p) => <I {...p}>
+  <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
+  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+</I>;
+
+const Database = (p) => <I {...p}>
+  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+  <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
+  <path d="M3 12A9 3 0 0 0 21 12"/>
+</I>;
+
+const HardDrive = (p) => <I {...p}>
+  <line x1="22" x2="2" y1="12" y2="12"/>
+  <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+  <line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/>
+</I>;
+
+const Users = (p) => <I {...p}>
+  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+  <circle cx="9" cy="7" r="4"/>
+  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+</I>;
+
+const Wifi = (p) => <I {...p}>
+  <path d="M5 13a10 10 0 0 1 14 0"/>
+  <path d="M8.5 16.5a5 5 0 0 1 7 0"/>
+  <path d="M2 8.82a15 15 0 0 1 20 0"/>
+  <line x1="12" x2="12.01" y1="20" y2="20"/>
+</I>;
+
+const GitBranch = (p) => <I {...p}>
+  <line x1="6" x2="6" y1="3" y2="15"/>
+  <circle cx="18" cy="6" r="3"/>
+  <circle cx="6" cy="18" r="3"/>
+  <path d="M18 9a9 9 0 0 1-9 9"/>
+</I>;
+
+const Cpu = (p) => <I {...p}>
+  <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+  <rect x="9" y="9" width="6" height="6"/>
+  <line x1="9" y1="2" x2="9" y2="4"/><line x1="15" y1="2" x2="15" y2="4"/>
+  <line x1="9" y1="20" x2="9" y2="22"/><line x1="15" y1="20" x2="15" y2="22"/>
+  <line x1="20" y1="9" x2="22" y2="9"/><line x1="20" y1="14" x2="22" y2="14"/>
+  <line x1="2" y1="9" x2="4" y2="9"/><line x1="2" y1="14" x2="4" y2="14"/>
+</I>;
+
+const Zap = (p) => <I {...p}>
+  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+</I>;
+
+const BrainCircuit = (p) => <I {...p}>
+  <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 0 0 12 18Z"/>
+  <path d="M9 13a4.5 4.5 0 0 0 3-4"/>
+  <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/>
+  <path d="M3.477 10.896a4 4 0 0 1 .585-.396"/>
+  <path d="M6 18a4 4 0 0 1-1.967-.516"/>
+  <path d="M12 13h4"/><path d="M12 18h6a2 2 0 0 1 2 2v1"/>
+  <path d="M12 8h8"/><path d="M16 8V5a2 2 0 0 1 2-2"/>
+  <circle cx="16" cy="13" r=".5"/><circle cx="18" cy="3" r=".5"/>
+  <circle cx="20" cy="21" r=".5"/><circle cx="20" cy="8" r=".5"/>
+</I>;
+
+const Radio = (p) => <I {...p}>
+  <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/>
+  <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/>
+  <circle cx="12" cy="12" r="2"/>
+  <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/>
+  <path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1"/>
+</I>;
+
+const Check = (p) => <I {...p}><polyline points="20 6 9 17 4 12"/></I>;
+const X = (p) => <I {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></I>;
+const ArrowDown = (p) => <I {...p}><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></I>;
+const Hash = (p) => <I {...p}><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></I>;
+const Phone = (p) => <I {...p}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></I>;
+const Lightbulb = (p) => <I {...p}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></I>;
+const Quote = (p) => <I {...p}><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></I>;
+const AlertTriangle = (p) => <I {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></I>;
+const ChevronRight = (p) => <I {...p}><polyline points="9 18 15 12 9 6"/></I>;
+
+
+/* ============================================================
+   CONTENT DATA
+   ============================================================ */
+
+const PERSONAS = {
+  'vibe-coder': {
+    id: 'vibe-coder', name: 'Vibe Coder', tagline: 'Lovable, Bolt, Cursor user',
+    Icon: Sparkles, desc: 'Built with an AI tool, no backend background, hopes to launch and survive.',
+    usage: { compute: 25, storage: 5, mau: 40, egress: 50, branching: 30, vector: 5 },
+    volatility: 4.5, techLiteracy: 15, billShockSensitivity: 95, typicalBase: 25,
+    color: '#f5b14a', quote: '"Wait — what is egress?"'
+  },
+  'indie-dev': {
+    id: 'indie-dev', name: 'Indie Hacker', tagline: 'Solo dev, side project',
+    Icon: Code2, desc: 'Codes confidently, watches the bill, $25/mo is the comfort ceiling.',
+    usage: { compute: 35, storage: 15, mau: 30, egress: 40, branching: 20, vector: 10 },
+    volatility: 1.8, techLiteracy: 75, billShockSensitivity: 70, typicalBase: 35,
+    color: '#7dd3a8', quote: '"Just don\'t surprise me."'
+  },
+  'b2b-saas': {
+    id: 'b2b-saas', name: 'B2B SaaS Startup', tagline: 'Multi-dev team, paying users',
+    Icon: Building2, desc: 'Needs SSO, basic SOC 2, audit trail. Currently stuck between $25 Pro and $599 Team.',
+    usage: { compute: 60, storage: 35, mau: 25, egress: 45, branching: 50, vector: 20 },
+    volatility: 1.4, techLiteracy: 80, billShockSensitivity: 60, typicalBase: 175,
+    color: '#9bb8e8', quote: '"I\'ll pay more for less procurement friction."'
+  },
+  'ai-startup': {
+    id: 'ai-startup', name: 'AI-Native Startup', tagline: 'RAG, agents, vector workloads',
+    Icon: Bot, desc: 'Heavy pgvector, branching for evals, agent loops that can run wild on viral days.',
+    usage: { compute: 85, storage: 40, mau: 60, egress: 75, branching: 70, vector: 90 },
+    volatility: 6.0, techLiteracy: 65, billShockSensitivity: 80, typicalBase: 350,
+    color: '#d8a4f0', quote: '"Our COGS is half OpenAI, half infra. Make the infra legible."'
+  },
+  'enterprise': {
+    id: 'enterprise', name: 'Enterprise', tagline: 'Procurement, compliance, scale',
+    Icon: Briefcase, desc: 'Custom SLA, HIPAA, private VPC, named CSM. Wants to buy on a PO.',
+    usage: { compute: 90, storage: 70, mau: 85, egress: 80, branching: 60, vector: 50 },
+    volatility: 1.2, techLiteracy: 85, billShockSensitivity: 30, typicalBase: 4500,
+    color: '#e8c97d', quote: '"Annual prepay, predictable line item."'
+  }
+};
+
+const BUNDLES = {
+  'metered': {
+    id: 'metered', name: 'Pure Metered', subtitle: 'Pay-as-you-go on every meter',
+    desc: 'Every CU-hour, GB, MAU, branch billed transparently. AWS / Firebase Blaze model. Maximum honesty on cost-to-serve, maximum cognitive load on the buyer.',
+    predictabilityModifier: 0.30, trustModifier: 0.55, billShockModifier: 1.4,
+    marginHealth: 95, base: 0, perception: 'Engineering-buyer respected. Brittle for non-engineering buyers.'
+  },
+  'capped': {
+    id: 'capped', name: 'Bundled with Spend Cap', subtitle: "Today's Supabase Pro",
+    desc: '$25 base + included quotas + Spend Cap default-on. Predictable for the median month; surprises driven by the exclusion list (compute, IPv4, replicas, PITR).',
+    predictabilityModifier: 0.72, trustModifier: 0.78, billShockModifier: 0.65,
+    marginHealth: 86, base: 25, perception: 'Trusted in steady state. Trust depends on the exclusion list staying short.'
+  },
+  'unlimited-fairuse': {
+    id: 'unlimited-fairuse', name: 'Unlimited + Fair-Use', subtitle: 'T-Mobile ONE-style',
+    desc: 'Flat fee, unlimited surface, deprioritization of the heavy-tail percentile. High customer affinity. Viable only where marginal cost approaches zero — which is not the case for compute, egress, or AI inference.',
+    predictabilityModifier: 0.96, trustModifier: 0.88, billShockModifier: 0.08,
+    marginHealth: 32, base: 49, perception: 'Customer-side popular. Margin-side requires conditions that backend infrastructure does not have.'
+  },
+  'workload-shaped': {
+    id: 'workload-shaped', name: 'Workload Bundle + Wallet', subtitle: 'Hybrid (the framework I\'d test)',
+    desc: 'Plan = base + included credits in a unified wallet + workload-shaped add-ons. Meters stay transparent underneath. Customer sees one dollar number; engineering retains every meter for cost-to-serve discipline.',
+    predictabilityModifier: 0.86, trustModifier: 0.94, billShockModifier: 0.22,
+    marginHealth: 89, base: 0, perception: 'Recommended framework. The architecture the JD describes — meters underneath, credits in the middle, plans on top.'
+  }
+};
+
+const TELECOM_PHASES = [
+  { year: '1985–2000', title: 'Pure Metering', desc: 'Per-minute voice, SMS at $0.10–$0.20, MMS premium, punitive roaming. Bills measured in dread.', meter: 'Minutes, SMS, MMS', shock: 95 },
+  { year: '2000s', title: 'Buckets + Cliffs', desc: '450/900/unlimited night-and-weekend buckets. Overage at $0.40/min defined the category\'s reputation.', meter: 'Bucket overage', shock: 90 },
+  { year: '2008–2012', title: 'Unlimited Talk + Text', desc: 'Voice/text became table stakes (zero marginal cost). Data buckets remained metered: 2/5/10 GB.', meter: 'Data GB', shock: 70 },
+  { year: '2012–2015', title: 'Family Share Plans', desc: 'Mobile Share / More Everything pooled GB across lines. Customers had to monitor a household-wide meter.', meter: 'Pooled GB', shock: 65 },
+  { year: '2016', title: 'T-Mobile ONE — The Pivot', desc: '"The era of the data plan is over." One plan, unlimited, fair-use deprioritization at the top 3% (>26 GB).', meter: 'Lines', shock: 25, isPivot: true },
+  { year: '2017+', title: 'Bundles + Value-Adds', desc: 'Magenta tiers, Netflix, Apple TV+, MLB.tv, AAA, free international roaming. "What\'s in my plan" became the comparison.', meter: 'Bundle features', shock: 15 },
+  { year: '2024+', title: 'Fixed Fair-Use Carries Over', desc: 'T-Mobile Home Internet expands 1.2 TB deprioritization threshold to all plans. Same logic, new product.', meter: 'TB threshold', shock: 18 }
+];
+
+const SUPABASE_METERS = [
+  { name: 'Compute', unit: 'CU-hours per project', Icon: Cpu, comprehension: 25, costToServe: 95 },
+  { name: 'Database Size', unit: 'GB-month', Icon: Database, comprehension: 70, costToServe: 75 },
+  { name: 'File Storage', unit: 'GB-month', Icon: HardDrive, comprehension: 90, costToServe: 80 },
+  { name: 'Egress', unit: 'GB (cached/uncached)', Icon: Wifi, comprehension: 20, costToServe: 90 },
+  { name: 'Auth MAU', unit: 'monthly active users', Icon: Users, comprehension: 80, costToServe: 30 },
+  { name: 'Edge Functions', unit: 'invocations / CPU-ms', Icon: Zap, comprehension: 40, costToServe: 65 },
+  { name: 'Realtime', unit: 'messages / connections', Icon: Radio, comprehension: 35, costToServe: 60 },
+  { name: 'Branching', unit: 'compute hours per branch', Icon: GitBranch, comprehension: 15, costToServe: 80 },
+  { name: 'Vector / pgvector', unit: 'absorbed in DB + compute', Icon: BrainCircuit, comprehension: 10, costToServe: 70 }
+];
+
+const COMPETITORS = [
+  { name: 'Supabase', headline: '$25 Pro', meter: 'Per-project compute + 9 meters', free: 'Generous', recent: 'Held $25 since March 2021', flag: 'reference' },
+  { name: 'Neon (Databricks)', headline: '$0.106/CU-hr Launch · $0.222 Scale', meter: 'Serverless CU-hr, scale-to-zero', free: '100 CU-hrs/proj', recent: 'Acquired May 2025; storage cut 80%, free doubled', flag: 'aggressive' },
+  { name: 'PlanetScale', headline: '$39 Scaler floor', meter: 'Cluster-size, predictable', free: 'Killed Hobby Apr 2024', recent: 'Removed free tier; trust damage persists', flag: 'cautionary' },
+  { name: 'Vercel', headline: '$20/seat Pro + $20 credit', meter: 'Active CPU + Provisioned Memory (Fluid)', free: 'Hobby (non-commercial)', recent: 'Active CPU launched Jun 2025; up to 90% AI-workload savings', flag: 'rapid-iteration' },
+  { name: 'Firebase Blaze', headline: 'Pay-as-you-go', meter: 'Reads, writes, MAU, SMS', free: 'Spark (daily quotas)', recent: 'SMS-auth bill-shock category meme', flag: 'cautionary' },
+  { name: 'Clerk', headline: '$25 + $0.02/MAU', meter: 'MAU + B2B MAO', free: '10K MAU', recent: 'Repriced 2024 for indie devs', flag: 'reference' },
+  { name: 'Cloudflare Workers', headline: '$5 Workers Paid', meter: 'Reqs + CPU-ms; zero egress', free: '100K reqs/day', recent: 'R2 zero-egress reset category expectations', flag: 'aggressive' },
+  { name: 'Cursor', headline: '$20 Pro / $40 Business', meter: 'Per-seat + AI-call usage', free: 'Hobby', recent: '$2.3B raise, $29.3B valuation Nov 2025', flag: 'reference' },
+  { name: 'Render', headline: '$7–$30/svc', meter: 'Per-instance flat', free: 'Limited', recent: 'Heroku-like predictability play', flag: 'reference' }
+];
+
+const SEGMENTS = [
+  { id: 's1', name: 'Pro Backend Dev', understands: 'All meters', misses: 'Branching compute', wedge: 'Project-level invoice clarity', priority: 3 },
+  { id: 's2', name: 'Full-Stack Startup', understands: 'Most meters', misses: 'Cached vs uncached egress', wedge: 'In-product cost forecast', priority: 4 },
+  { id: 's3', name: 'Indie Hacker', understands: 'Basics', misses: 'Compute add-ons', wedge: '$9 Builder mid-tier', priority: 4 },
+  { id: 's4', name: 'Vibe Coder', understands: 'Almost nothing', misses: 'Almost everything', wedge: 'Dollar-denominated wallet', priority: 5 },
+  { id: 's5', name: 'PM Prototyper', understands: 'Some', misses: 'Compute model', wedge: 'Auto-archive branches', priority: 3 },
+  { id: 's6', name: 'Non-Tech Founder', understands: 'Subscription billing', misses: 'Everything else', wedge: 'Embedded in Lovable/Bolt UI', priority: 5 },
+  { id: 's7', name: 'Small Biz Owner', understands: 'Flat monthly', misses: 'Usage-based', wedge: 'Through agency channel', priority: 2 },
+  { id: 's8', name: 'Agency', understands: 'All meters', misses: 'Multi-tenant model', wedge: 'Per-client invoicing API', priority: 3 },
+  { id: 's9', name: 'Enterprise Innovation', understands: 'Compute + MAU', misses: 'Branching at QA scale', wedge: 'Committed-spend program', priority: 4 },
+  { id: 's10', name: 'AI-Native Startup', understands: 'Compute + vector', misses: 'Agent loop economics', wedge: 'AI Workloads add-on SKU', priority: 5 }
+];
+
+const THESES = [
+  { id: 'A', title: 'Telecom Arc', summary: 'Metered → bundled → unlimited-with-fair-use as the buyer broadens.',
+    pro: 'Customer-side psychology evidence is overwhelming. Spend Cap is already a soft-throttle. Org pooling already mimics family plans.',
+    con: 'Marginal cost on compute, egress, AI inference is not zero. Heavy-tail outliers can be 1000x median, not 5x.',
+    verdict: 'Modify', verdictColor: 'amber' },
+  { id: 'B', title: 'Workload Bundles', summary: 'Different workloads consume differently; ship shaped bundles, no "unlimited" rhetoric.',
+    pro: 'Matches actual cost-to-serve. Avoids Vercel\'s communication problems.',
+    con: 'SKU proliferation. Confusing for the customer who is "all of the above."',
+    verdict: 'Partial', verdictColor: 'amber' },
+  { id: 'C', title: 'Hybrid (Bundles + Meters + Commits)', summary: 'Bundles for understanding, meters for trust, commits for scale. One billing engine, three buying motions.',
+    pro: 'Mirrors AWS, Snowflake, Databricks, Stripe. Aligns with the JD\'s "pricing architecture that scales to whatever Supabase becomes."',
+    con: 'Internal complexity. Risk of an incomprehensible pricing page.',
+    verdict: 'Accept', verdictColor: 'emerald', isRecommended: true },
+  { id: 'D', title: 'AI Changes Everything', summary: 'Apps scale through agents not human users; price on workflows not MAUs.',
+    pro: 'Already showing up in Vercel Active CPU and Lovable per-message credits.',
+    con: 'Premature for most Supabase customers. Picks up someone else\'s token risk.',
+    verdict: 'Layer on top', verdictColor: 'emerald' }
+];
+
+const RECOMMENDED_TIERS = [
+  { name: 'Free', price: '$0', target: 'Hobby, learning', credits: '$0', new: false, key: 'Generous; auto-pause 7d' },
+  { name: 'Builder', price: '$9', target: 'Vibe coders, indie ship', credits: '$5 wallet', new: true, key: 'Hard $9 cap, no overages' },
+  { name: 'Pro', price: '$25', target: 'Solo devs, early startups', credits: '$10 + $10 wallet', new: false, key: '5-year price-lock holds' },
+  { name: 'Scale', price: '$99', target: 'Growing B2B SaaS', credits: '$30 wallet', new: true, key: 'Fills the $25→$599 cliff' },
+  { name: 'Team', price: '$599', target: 'Multi-team, regulated', credits: '$100 wallet', new: false, key: 'HIPAA add-on, audit logs' },
+  { name: 'Enterprise', price: 'Custom', target: 'Procurement, scale', credits: 'Negotiated', new: false, key: 'Committed annual spend' }
+];
+
+
+/* ============================================================
+   HELPER COMPONENTS
+   ============================================================ */
+
+const Eyebrow = ({ children, className = '' }) => (
+  <div className={`font-mono text-[10px] tracking-[0.2em] uppercase text-stone-500 ${className}`}>
+    {children}
+  </div>
+);
+
+const SectionHeader = ({ num, label, title, lead }) => (
+  <div className="mb-12">
+    <div className="flex items-baseline gap-4 mb-6">
+      <span className="font-mono text-xs text-stone-600 tabular-nums">§ {num}</span>
+      <Eyebrow>{label}</Eyebrow>
+    </div>
+    <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-stone-100 leading-[1.05] mb-6 max-w-4xl">
+      {title}
+    </h2>
+    {lead && (
+      <p className="font-body text-lg md:text-xl text-stone-400 leading-relaxed max-w-3xl">
+        {lead}
+      </p>
+    )}
+  </div>
+);
+
+const PullQuote = ({ children, attribution }) => (
+  <div className="my-8 pl-6 border-l-2 border-emerald-700/60">
+    <p className="font-display italic text-2xl md:text-3xl text-stone-200 leading-snug">
+      "{children}"
+    </p>
+    {attribution && (
+      <div className="font-mono text-xs text-stone-500 mt-3 tracking-wider">
+        — {attribution}
+      </div>
+    )}
+  </div>
+);
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+const Hero = () => (
+  <section className="relative pt-20 pb-28 px-6 md:px-12 lg:px-20 overflow-hidden grain-overlay">
+    <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+         style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+
+    <div className="relative max-w-6xl mx-auto">
+      <div className="flex items-center gap-3 mb-10 anim-fade-up">
+        <div className="w-2 h-2 rounded-full bg-emerald-400 anim-pulse-soft" />
+        <Eyebrow>Pricing &amp; Billing PM Brief · Prepared for Supabase · April 2026</Eyebrow>
+      </div>
+
+      <h1 className="font-display text-4xl md:text-6xl lg:text-7xl text-stone-100 leading-[1.02] mb-10 anim-fade-up max-w-5xl" style={{animationDelay: '0.1s'}}>
+        Where Supabase pricing earns trust at <span className="italic text-emerald-300">$25/mo</span>, where it leaks, and a framework I'd validate before the next structural change.
+      </h1>
+
+      <div className="max-w-3xl space-y-5 text-stone-300 font-body text-lg leading-relaxed anim-fade-up" style={{animationDelay: '0.2s'}}>
+        <p>
+          Prepared by <span className="text-stone-100">Kelvin Zee</span> ahead of an interview for the Product Manager, Pricing &amp; Billing role. 18 years in subscription pricing and billing platforms — T-Mobile postpaid packaging through the T-Mobile ONE transition (postpaid 56.8M&nbsp;→&nbsp;75.6M, 2015–2017), the digital transformation of T-Mobile Billing &amp; Benefits (+204% YoY one-time payment completion, +23% CLV, Mintel Best Wireless Billing 2019), and Amazon Prime's Worldwide Engagement control plane (30M+ monthly benefit utilizations across 26 countries, +23% renewals at peak).
+        </p>
+        <p>
+          This brief is a measured read of where the current architecture creates customer trust and where it leaks, framed against the buyer-base shift driving the next decision. Every recommendation is presented as a hypothesis to validate against Supabase's internal data, not a prescription to ship. The structure is built to be skimmed in three minutes, read in fifteen, or worked through end-to-end across a panel.
+        </p>
+        <p className="text-stone-300">
+          <span className="font-mono text-xs tracking-widest uppercase text-emerald-400/80 block mb-2">If you only read three lines</span>
+          One: vibe-coder bill shock is a brand event, not a billing event — telecom's <em>fair-use</em> primitive transfers; its <em>cost structure</em> does not. Two: the 24× cliff between $25 Pro and $599 Team is leaking mid-stage B2B SaaS to Neon and Render. Three: AI workloads (vector storage, branching for evals, agent loops) are absorbed into compute and invisible on the invoice — that's whitespace.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-stone-800/60 mt-16 border border-stone-800/60 anim-fade-up" style={{animationDelay: '0.3s'}}>
+        {[
+          { num: '~5M', label: 'Developers on Supabase', sub: 'Copplestone, Nov 2025 podcast' },
+          { num: '$5B', label: 'Series E valuation, Oct 2025', sub: 'Reportedly raising at ~$10B (Sacra)' },
+          { num: '$25', label: 'Pro plan headline, unchanged', sub: 'Held since March 2021' },
+          { num: '9', label: 'Distinct meters on one invoice', sub: 'Compute, MAU, egress, branching, vector …' }
+        ].map((stat, i) => (
+          <div key={i} className="bg-stone-950 p-6 md:p-8">
+            <div className="font-display text-3xl md:text-4xl text-emerald-300 num-display mb-2">{stat.num}</div>
+            <div className="text-stone-200 text-sm mb-1">{stat.label}</div>
+            <div className="font-mono text-[10px] text-stone-500 tracking-wide">{stat.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* How to read this navigator */}
+      <div className="mt-16 grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60 anim-fade-up" style={{animationDelay: '0.35s'}}>
+        {[
+          { tag: '3-minute read', heading: 'Recruiter / first pass', body: 'This page plus §01 (the setup) and §10 (framework I\'d validate). The thesis and the calibration of confidence on it.' },
+          { tag: '15-minute read', heading: 'Hiring manager', body: 'Add §07 (four theses, with verdicts), §09 (interactive Bundle Builder), §11 (90-day validation plan). The reasoning and the sequencing.' },
+          { tag: 'Full brief', heading: 'Panel / deep read', body: 'All sections including telecom evolution analysis, segment map, competitive landscape, and §12 (open questions I\'d ask Supabase).' }
+        ].map((row, i) => (
+          <div key={i} className="bg-stone-950 p-6">
+            <Eyebrow className="mb-3 text-emerald-400/80">{row.tag}</Eyebrow>
+            <div className="font-display text-lg text-stone-100 mb-2">{row.heading}</div>
+            <p className="font-body text-sm text-stone-400 leading-relaxed">{row.body}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-16 flex items-center gap-3 text-stone-500 anim-fade-up" style={{animationDelay: '0.4s'}}>
+        <ArrowDown size={16} className="anim-pulse-soft" />
+        <span className="font-mono text-xs tracking-widest uppercase">Begin brief</span>
+      </div>
+    </div>
+  </section>
+);
+
+/* ============================================================
+   SETUP
+   ============================================================ */
+
+const SetupSection = () => (
+  <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <SectionHeader
+        num="01"
+        label="The Setup"
+        title="Three forces collide on the pricing page."
+        lead="A buyer-base shift, a competitive moment, and a strategic role being hired to reshape the architecture."
+      />
+      <div className="grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60">
+        {[
+          { tag: 'The Shift', head: 'AI-assisted builders are the new top of funnel.',
+            body: 'Lovable closed $330M at a $6.6B valuation (December 2025). Cursor sits at a $29.3B valuation. Bolt, Replit, Cursor, and Lovable all auto-provision Supabase. A meaningful share of new sign-ups are not engineers and have limited intuition for backend cost.',
+            stat: '"Sign-up rate just doubled because of vibe coding." — Paul Copplestone, Fortune (April 2025).' },
+          { tag: 'The Signal', head: 'The category is repricing — Supabase is the stable point.',
+            body: 'Neon (acquired by Databricks May 2025) cut compute 15–25% and storage 80%. Vercel introduced Active CPU pricing in June 2025, saving customers up to 90% on AI workloads but creating short-term communication friction. PlanetScale killed its Hobby tier in April 2024 and lost meaningful developer trust. Supabase has held $25 since March 2021.',
+            stat: 'ARR $30M → $70M (end-2024 → August 2025). Sacra estimate.' },
+          { tag: 'The Role', head: '"Rethink how we bill for compute. Unify credits."',
+            body: 'The Ashby JD names the brief explicitly: lead company-wide initiatives that reshape monetization, rethink compute billing, unify credits, and design a pricing architecture that scales to whatever Supabase becomes. Reports into commercial leadership, partnered across PLG and enterprise.',
+            stat: 'Job posting deadline March 30, 2026 — pipeline now in motion.' }
+        ].map((card, i) => (
+          <div key={i} className="bg-stone-950 p-8 md:p-10 relative">
+            <Eyebrow className="mb-6 text-emerald-400/80">{card.tag}</Eyebrow>
+            <h3 className="font-display text-2xl md:text-3xl text-stone-100 leading-tight mb-5">{card.head}</h3>
+            <p className="font-body text-stone-400 leading-relaxed mb-6">{card.body}</p>
+            <div className="font-mono text-[11px] text-stone-500 leading-relaxed pt-5 border-t border-stone-800/80">{card.stat}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+
+/* ============================================================
+   TELECOM TIMELINE (interactive)
+   ============================================================ */
+
+const TelecomTimeline = () => {
+  const [activePhase, setActivePhase] = useState(4);
+  const phase = TELECOM_PHASES[activePhase];
+
+  return (
+    <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay relative">
+      <div className="max-w-6xl mx-auto">
+        <SectionHeader
+          num="02"
+          label="The Analogy — Used Carefully"
+          title="Telecom lived a similar buyer-base broadening. Two pieces transfer; two pieces don't."
+          lead="Consumer telecom moved metered → bundled → unlimited-with-fair-use across forty years as the buyer base widened. The customer-side psychology evidence is real and worth borrowing. The cost-structure conditions that made unlimited viable for telecom (LTE buildout, near-zero per-minute marginal cost) do not transfer to backend infrastructure. Both ideas held simultaneously."
+        />
+
+        <div className="relative mb-12">
+          <div className="absolute top-12 left-0 right-0 h-px bg-stone-800" />
+          <div className="relative grid grid-cols-7 gap-2">
+            {TELECOM_PHASES.map((ph, i) => {
+              const isActive = activePhase === i;
+              return (
+                <button key={i} onClick={() => setActivePhase(i)}
+                        className={`text-left transition-all duration-300 group ${isActive ? 'scale-105' : ''}`}>
+                  <div className="font-mono text-[10px] text-stone-500 mb-3 leading-tight whitespace-nowrap overflow-hidden">{ph.year}</div>
+                  <div className={`w-3 h-3 rounded-full mx-auto transition-all duration-300 ${isActive ? 'bg-emerald-400 ring-4 ring-emerald-400/20' : ph.isPivot ? 'bg-amber-400/80' : 'bg-stone-600 group-hover:bg-stone-400'}`} />
+                  <div className={`mt-3 text-xs leading-tight transition-colors ${isActive ? 'text-stone-100' : 'text-stone-500 group-hover:text-stone-300'}`}>{ph.title}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 bg-stone-900/40 border border-stone-800 p-8 md:p-10 anim-fade-in" key={activePhase}>
+          <div className="md:col-span-2">
+            <div className="flex items-baseline gap-4 mb-4">
+              <Phone size={18} className="text-emerald-400/70" />
+              <Eyebrow>{phase.year}</Eyebrow>
+              {phase.isPivot && <span className="font-mono text-[10px] text-amber-400 tracking-widest uppercase">The Pivot</span>}
+            </div>
+            <h3 className="font-display text-3xl md:text-4xl text-stone-100 mb-5">{phase.title}</h3>
+            <p className="font-body text-stone-400 leading-relaxed text-lg">{phase.desc}</p>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <Eyebrow className="mb-3">Primary Meter</Eyebrow>
+              <div className="font-mono text-stone-300 text-lg">{phase.meter}</div>
+            </div>
+            <div>
+              <Eyebrow className="mb-3">Bill Shock Index</Eyebrow>
+              <div className="flex items-end gap-3">
+                <span className="font-display text-4xl text-stone-100 num-display">{phase.shock}</span>
+                <span className="font-mono text-stone-500 text-sm pb-2">/ 100</span>
+              </div>
+              <div className="mt-3 h-1.5 bg-stone-800 rounded overflow-hidden">
+                <div className="h-full transition-all duration-500"
+                     style={{ width: `${phase.shock}%`,
+                              background: phase.shock > 60 ? '#f5b14a' : phase.shock > 30 ? '#e8c97d' : '#7dd3a8' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 mt-12">
+          <div className="border-l-2 border-emerald-700 pl-6">
+            <Eyebrow className="mb-3 text-emerald-400">Where the analogy works</Eyebrow>
+            <ul className="space-y-3 text-stone-300 font-body">
+              {['Customer psychology of meters they don\'t understand',
+                'Bill shock = brand event, not billing event',
+                'Org-level pooling = family share plan',
+                'Spend Cap = deprioritization, conceptually',
+                'Bundled value-adds (Netflix, Apple TV+ → R2, Resend, Stripe)',
+                '5-year price-lock as trust device'].map((line, i) => (
+                <li key={i} className="flex gap-3">
+                  <Check size={16} className="text-emerald-400/70 flex-shrink-0 mt-1" />
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="border-l-2 border-amber-700/60 pl-6">
+            <Eyebrow className="mb-3 text-amber-400">Where the analogy breaks</Eyebrow>
+            <ul className="space-y-3 text-stone-300 font-body">
+              {['Marginal cost on compute / egress / inference is not zero',
+                'Heavy-tail can be 1000x median (Vercel Puppeteer 494 GB-hr / 12d)',
+                'Apps compose, they don\'t consume — agents are not users',
+                '10+ workload dimensions vs telecom\'s 3',
+                'B2B procurement ≠ consumer ARPU',
+                'Open-source self-host is the floor — telecom had no escape valve'].map((line, i) => (
+                <li key={i} className="flex gap-3">
+                  <X size={16} className="text-amber-400/70 flex-shrink-0 mt-1" />
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <PullQuote attribution="Verdict, used measuredly">
+          A useful psychology and storytelling frame. A misleading cost-structure prescription. Both held at the same time.
+        </PullQuote>
+      </div>
+    </section>
+  );
+};
+
+/* ============================================================
+   CURRENT METERS
+   ============================================================ */
+
+const CurrentMeters = () => (
+  <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <SectionHeader
+        num="03"
+        label="Today's Architecture"
+        title="Nine meters, one invoice, two very different audiences."
+        lead="Each meter is honest about its cost-to-serve. The ones at the bottom of this chart are where the bill-shock incidents happen — exactly where customer comprehension is lowest."
+      />
+      <div className="space-y-3">
+        {[...SUPABASE_METERS].sort((a, b) => a.comprehension - b.comprehension).map((meter, i) => {
+          const Icon = meter.Icon;
+          return (
+            <div key={meter.name} className="grid grid-cols-12 gap-4 items-center py-4 border-b border-stone-800/50 hover:bg-stone-900/30 transition-colors group">
+              <div className="col-span-1 flex items-center justify-center">
+                <Icon size={20} className="text-stone-500 group-hover:text-stone-300 transition-colors" />
+              </div>
+              <div className="col-span-3">
+                <div className="text-stone-100 text-sm md:text-base">{meter.name}</div>
+                <div className="font-mono text-[10px] text-stone-500 mt-0.5">{meter.unit}</div>
+              </div>
+              <div className="col-span-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-mono text-[10px] text-stone-500 w-24">Comprehension</span>
+                  <div className="flex-1 h-1.5 bg-stone-800 rounded overflow-hidden">
+                    <div className="h-full transition-all duration-700"
+                         style={{ width: `${meter.comprehension}%`,
+                                  background: meter.comprehension > 60 ? '#7dd3a8' : meter.comprehension > 30 ? '#e8c97d' : '#e8946b' }} />
+                  </div>
+                  <span className="font-mono text-[10px] text-stone-400 num-display w-8 text-right">{meter.comprehension}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] text-stone-500 w-24">Cost-to-serve</span>
+                  <div className="flex-1 h-1.5 bg-stone-800 rounded overflow-hidden">
+                    <div className="h-full bg-stone-400 transition-all duration-700" style={{ width: `${meter.costToServe}%` }} />
+                  </div>
+                  <span className="font-mono text-[10px] text-stone-400 num-display w-8 text-right">{meter.costToServe}</span>
+                </div>
+              </div>
+              <div className="col-span-4 font-body text-sm text-stone-500 italic">
+                {meter.comprehension < 30 ? 'Where bill shock is born.' :
+                 meter.comprehension < 60 ? 'Borderline — needs better in-product explanation.' :
+                 'Familiar. Customers can budget against it.'}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-12 grid md:grid-cols-3 gap-8">
+        <div>
+          <Eyebrow className="mb-3">Strength</Eyebrow>
+          <p className="font-body text-stone-300 leading-relaxed">
+            Spend Cap default-on for Pro is best-in-class. Org-level pooling is friendlier than Neon's project-level silos. $25 unchanged for 5 years is a real trust signal.
+          </p>
+        </div>
+        <div>
+          <Eyebrow className="mb-3">Friction</Eyebrow>
+          <p className="font-body text-stone-300 leading-relaxed">
+            Spend Cap exclusion list is too long. Compute, IPv4, replicas, PITR all bill regardless of cap. The 24x cliff from $25 to $599 has no mid-tier.
+          </p>
+        </div>
+        <div>
+          <Eyebrow className="mb-3">Whitespace</Eyebrow>
+          <p className="font-body text-stone-300 leading-relaxed">
+            No SKU for AI workloads. Vector storage, branching for evals, agent loops absorbed into compute — invisible until the bill arrives. Major opportunity.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+
+/* ============================================================
+   COMPETITIVE
+   ============================================================ */
+
+const Competitive = () => (
+  <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <SectionHeader
+        num="04"
+        label="The Field"
+        title="The category is repricing — Supabase has held the line."
+        lead="Two simultaneous movements: aggressive usage-based undercutting (Neon, Cloudflare) and rapid pricing iteration (Vercel) producing mixed market reception. Two trust missteps (PlanetScale, Firebase). One stable point — Supabase $25 since March 2021."
+      />
+      <div className="overflow-x-auto scrollbar-thin">
+        <table className="w-full min-w-[820px] text-sm">
+          <thead>
+            <tr className="border-b border-stone-700">
+              <th className="text-left py-3 pr-4 font-mono text-[10px] tracking-widest text-stone-500 uppercase">Vendor</th>
+              <th className="text-left py-3 pr-4 font-mono text-[10px] tracking-widest text-stone-500 uppercase">Headline</th>
+              <th className="text-left py-3 pr-4 font-mono text-[10px] tracking-widest text-stone-500 uppercase">Compute Meter</th>
+              <th className="text-left py-3 pr-4 font-mono text-[10px] tracking-widest text-stone-500 uppercase">Free Plan</th>
+              <th className="text-left py-3 pr-4 font-mono text-[10px] tracking-widest text-stone-500 uppercase">Recent Move</th>
+              <th className="text-left py-3 pr-2 font-mono text-[10px] tracking-widest text-stone-500 uppercase">Posture</th>
+            </tr>
+          </thead>
+          <tbody className="font-body">
+            {COMPETITORS.map((c, i) => (
+              <tr key={c.name} className="border-b border-stone-800/50 hover:bg-stone-900/30 transition-colors">
+                <td className="py-4 pr-4 text-stone-100">
+                  {c.name === 'Supabase' ? (
+                    <span className="text-emerald-300 font-medium">{c.name} <span className="text-[10px] font-mono text-emerald-400/70">▸ ref.</span></span>
+                  ) : c.name}
+                </td>
+                <td className="py-4 pr-4 font-mono text-stone-300 text-xs">{c.headline}</td>
+                <td className="py-4 pr-4 text-stone-400">{c.meter}</td>
+                <td className="py-4 pr-4 text-stone-500">{c.free}</td>
+                <td className="py-4 pr-4 text-stone-400 text-xs">{c.recent}</td>
+                <td className="py-4 pr-2">
+                  <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-1 ${
+                    c.flag === 'aggressive' ? 'text-emerald-400 bg-emerald-950/40' :
+                    c.flag === 'cautionary' ? 'text-amber-400 bg-amber-950/30' :
+                    c.flag === 'rapid-iteration' ? 'text-stone-300 bg-stone-800/60' :
+                    'text-stone-400 bg-stone-800/50'
+                  }`}>
+                    {c.flag === 'aggressive' ? 'Cutting' :
+                     c.flag === 'cautionary' ? 'Disrupted' :
+                     c.flag === 'rapid-iteration' ? 'Iterating' : 'Stable'}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-10 grid md:grid-cols-2 gap-8 font-body text-stone-300 leading-relaxed">
+        <p>
+          <span className="font-display italic text-stone-100">Neon's absorption into Databricks</span> is the most consequential pricing event of 2025 for the Postgres-platform category. They now hold the cheapest per-CU-hour compute, the cheapest storage in the category, scale-to-zero, and Enterprise features bundled into the Scale tier — funded in part by Databricks' AWS hyperscaler leverage. Supabase cannot win on raw price-per-CU and should not try. The competitive answer is differentiated workload packaging and the unified credit primitive named in the JD.
+        </p>
+        <p>
+          <span className="font-display italic text-stone-100">Vercel's Active CPU pricing</span> (June 2025) is more nuanced than "cautionary tale." It saved AI-workload customers up to 90% on idle time, and 75% of Vercel function invocations now run on Fluid compute. The friction was communication and migration overhead, not the economics. Worth noting Supabase and Vercel are increasingly cooperative — the Vercel CLI now provisions Supabase projects in under sixty seconds with unified billing. The competitive frame is partial overlap, not zero-sum.
+        </p>
+      </div>
+    </div>
+  </section>
+);
+
+/* ============================================================
+   AI BUILDER SHIFT
+   ============================================================ */
+
+const AIShift = () => (
+  <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <SectionHeader
+        num="05"
+        label="The Customer"
+        title="The buyer changed. The pricing didn't."
+        lead="AI-assisted builders are now Supabase's largest acquisition channel. Most cannot read a CU-hour invoice."
+      />
+      <div className="grid md:grid-cols-5 gap-px bg-stone-800/60 border border-stone-800/60 mb-12">
+        <div className="bg-stone-950 p-8 md:col-span-2">
+          <Eyebrow className="mb-4">The Funnel Inversion</Eyebrow>
+          <h3 className="font-display text-2xl md:text-3xl text-stone-100 mb-4 leading-tight">
+            Lovable, Bolt, Cursor are the new top of funnel.
+          </h3>
+          <p className="font-body text-stone-400 leading-relaxed text-sm">
+            Lovable: $330M Series B at a $6.6B valuation (December 2025), $200M+ ARR, 25M+ projects, native Supabase as default backend (docs.lovable.dev). Bolt.new auto-provisions Supabase. Cursor's "Connect to Supabase" is one click — and Cursor itself is now at a $29.3B valuation (November 2025), a different scale of distribution channel from where the original developer-platform pricing model was set.
+            <br /><br />
+            The user who arrives via these tools <em className="text-stone-200">never sees a Supabase signup funnel</em> — and the pricing-page assumptions that worked for direct-acquisition engineers don't fully transfer.
+          </p>
+        </div>
+        <div className="bg-stone-950 p-8 md:col-span-3 grid grid-cols-2 gap-6">
+          {[
+            { num: '~5M', label: 'Developers on Supabase', sub: 'Copplestone podcast, Nov 2025' },
+            { num: '25M+', label: 'Lovable projects (Dec 2025)', sub: 'Default to Supabase backend' },
+            { num: '$96K', label: "Cara's 1-week Vercel bill (Jun 2024)", sub: '40K → 650K users; 56M invocations/day' },
+            { num: '494', label: 'GB-hours / 12 days, single AI agent', sub: 'Vercel Puppeteer community report' }
+          ].map((s, i) => (
+            <div key={i} className="border-l border-stone-800 pl-4">
+              <div className="font-display text-3xl md:text-4xl text-emerald-300 num-display mb-2">{s.num}</div>
+              <div className="text-stone-300 text-sm leading-tight mb-1">{s.label}</div>
+              <div className="font-mono text-[10px] text-stone-500">{s.sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <PullQuote attribution="Paul Copplestone, Supabase CEO — Fortune, April 2025">
+        Our sign-up rate just doubled in the past three months because of vibe coding — Bolt, Lovable, Cursor, all those.
+      </PullQuote>
+    </div>
+  </section>
+);
+
+/* ============================================================
+   SEGMENTS
+   ============================================================ */
+
+const Segments = () => {
+  const [hovered, setHovered] = useState(null);
+  return (
+    <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+      <div className="max-w-6xl mx-auto">
+        <SectionHeader
+          num="06"
+          label="The Ten"
+          title="Ten segments. Three buying motions. One pricing page."
+          lead="Priority signal (5 = highest impact for the new architecture)."
+        />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-stone-800/60 border border-stone-800/60">
+          {SEGMENTS.map((seg) => {
+            const isFocus = seg.priority >= 5;
+            return (
+              <div key={seg.id}
+                   onMouseEnter={() => setHovered(seg.id)}
+                   onMouseLeave={() => setHovered(null)}
+                   className={`bg-stone-950 p-5 transition-colors cursor-default relative ${hovered === seg.id ? 'bg-stone-900' : ''}`}>
+                <div className="flex items-start justify-between mb-3">
+                  <Hash size={12} className="text-stone-600 mt-1" />
+                  <div className="flex gap-0.5">
+                    {[1,2,3,4,5].map(p => (
+                      <div key={p} className={`w-1 h-1 rounded-full ${p <= seg.priority ? (isFocus ? 'bg-emerald-400' : 'bg-stone-400') : 'bg-stone-700'}`} />
+                    ))}
+                  </div>
+                </div>
+                <div className={`text-sm leading-tight mb-3 ${isFocus ? 'text-stone-100' : 'text-stone-300'}`}>{seg.name}</div>
+                <div className="space-y-2 text-[11px] font-body">
+                  <div>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-stone-600">Gets</span>
+                    <div className="text-stone-400">{seg.understands}</div>
+                  </div>
+                  <div>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-stone-600">Misses</span>
+                    <div className="text-stone-400">{seg.misses}</div>
+                  </div>
+                  <div className="pt-2 border-t border-stone-800/60">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-400/80">Wedge</span>
+                    <div className="text-stone-200">{seg.wedge}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ============================================================
+   THESES
+   ============================================================ */
+
+const Theses = () => (
+  <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <SectionHeader
+        num="07"
+        label="Four Theses"
+        title="One survives unmodified."
+        lead="The right answer is Thesis C, with a Thesis D overlay, framed in the customer-facing language of Thesis A."
+      />
+      <div className="grid md:grid-cols-2 gap-px bg-stone-800/60 border border-stone-800/60">
+        {THESES.map((t, i) => (
+          <div key={t.id} className={`bg-stone-950 p-8 md:p-10 relative ${t.isRecommended ? 'ring-1 ring-emerald-700/40 ring-inset' : ''}`}>
+            {t.isRecommended && (
+              <div className="absolute top-6 right-6">
+                <span className="font-mono text-[10px] tracking-widest uppercase text-emerald-400 bg-emerald-950/60 px-2 py-1">★ Recommended</span>
+              </div>
+            )}
+            <div className="flex items-baseline gap-3 mb-4">
+              <span className="font-display text-5xl text-stone-700 italic">{t.id}</span>
+              <Eyebrow>Thesis</Eyebrow>
+            </div>
+            <h3 className="font-display text-2xl md:text-3xl text-stone-100 mb-4 leading-tight">{t.title}</h3>
+            <p className="font-body text-stone-300 leading-relaxed mb-6 text-lg">{t.summary}</p>
+            <div className="space-y-4 mb-6 text-sm">
+              <div className="flex gap-3">
+                <Check size={14} className="text-emerald-400/70 flex-shrink-0 mt-1" />
+                <p className="font-body text-stone-400">{t.pro}</p>
+              </div>
+              <div className="flex gap-3">
+                <X size={14} className="text-amber-400/70 flex-shrink-0 mt-1" />
+                <p className="font-body text-stone-400">{t.con}</p>
+              </div>
+            </div>
+            <div className="pt-4 border-t border-stone-800">
+              <Eyebrow className="mb-2">Verdict</Eyebrow>
+              <span className={`font-display text-2xl italic ${t.verdictColor === 'emerald' ? 'text-emerald-300' : 'text-amber-300'}`}>
+                {t.verdict}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+
+/* ============================================================
+   BUNDLE BUILDER (CENTERPIECE)
+   ============================================================ */
+
+function computeOutcome(persona, bundle) {
+  const baseCost = persona.typicalBase;
+  const expectedBill = baseCost * (1 + (1 - bundle.predictabilityModifier) * 0.3);
+  const swingFactor = (persona.volatility - 1);
+  const minBill = Math.max(
+    bundle.id === 'unlimited-fairuse' ? bundle.base : baseCost * 0.6,
+    baseCost * (1 - swingFactor * 0.15 * (1 - bundle.predictabilityModifier))
+  );
+  const maxBill = bundle.id === 'unlimited-fairuse'
+    ? bundle.base
+    : baseCost * (1 + swingFactor * bundle.billShockModifier);
+
+  const predictability = Math.max(8, Math.min(98, bundle.predictabilityModifier * 100 - (persona.volatility - 1) * 8));
+  const trust = Math.max(10, Math.min(98, bundle.trustModifier * 80 + persona.techLiteracy * 0.25));
+  const billShockRisk = Math.max(0, Math.min(100, bundle.billShockModifier * persona.billShockSensitivity * (persona.volatility / 3)));
+  const marginHealth = Math.max(15, Math.min(100, bundle.marginHealth - (persona.volatility - 1) * 4));
+
+  let verdict = '';
+  let verdictTone = 'neutral';
+  if (bundle.id === 'metered') {
+    if (persona.techLiteracy > 70) { verdict = 'Sophisticated buyer can model this. Acceptable trade-off, with effort.'; verdictTone = 'ok'; }
+    else if (persona.billShockSensitivity > 70) { verdict = 'High probability of a public bill-shock incident based on observed patterns.'; verdictTone = 'bad'; }
+    else { verdict = 'Survivable but anxious. Likely churn after the first surprise bill.'; verdictTone = 'warn'; }
+  } else if (bundle.id === 'capped') {
+    if (persona.id === 'enterprise') { verdict = 'Spend Cap is the wrong primitive for this buyer — they want a contract, not a fence.'; verdictTone = 'warn'; }
+    else if (persona.volatility > 4) { verdict = "Cap helps the median month. Compute spike still hits because compute is on the exclusion list."; verdictTone = 'warn'; }
+    else { verdict = "Today's default. Works for most. Trust holds — until the first compute spike."; verdictTone = 'ok'; }
+  } else if (bundle.id === 'unlimited-fairuse') {
+    if (persona.volatility > 4) { verdict = 'Customer satisfaction high. Negative gross margin on heavy-tail outliers. Not sustainable at scale.'; verdictTone = 'bad'; }
+    else if (persona.id === 'enterprise') { verdict = "Enterprise doesn't want unlimited; they want a predictable line item with an SLA."; verdictTone = 'warn'; }
+    else { verdict = 'Marketable, popular. Margin pressure on the long tail. Manageable only with strict cost-to-serve discipline.'; verdictTone = 'warn'; }
+  } else if (bundle.id === 'workload-shaped') {
+    if (persona.id === 'vibe-coder') { verdict = "Wallet metaphor plus a dollar-denominated cap converts the bill into a number this buyer can model. Trust mechanism intact."; verdictTone = 'good'; }
+    else if (persona.id === 'ai-startup') { verdict = "AI Workloads add-on makes vector storage, branching, and agent loops legible on the invoice. Captured value, intentionally."; verdictTone = 'good'; }
+    else if (persona.id === 'b2b-saas') { verdict = "A Scale-tier hypothesis closes the $25 → $599 cliff. SSO included. Procurement-friendly motion."; verdictTone = 'good'; }
+    else if (persona.id === 'enterprise') { verdict = "Committed Spend gives sales a procurement-friendly motion. EDP-style for >$50K commits."; verdictTone = 'good'; }
+    else { verdict = "Familiar Pro experience plus optional add-ons at growth points. Path to expansion preserved."; verdictTone = 'good'; }
+  }
+
+  return { expectedBill, minBill, maxBill, predictability, trust, billShockRisk, marginHealth, verdict, verdictTone };
+}
+
+const MetricMeter = ({ label, value, sublabel, invert = false }) => {
+  const v = Math.round(value);
+  const fillColor = invert
+    ? (v > 60 ? '#e8946b' : v > 30 ? '#e8c97d' : '#7dd3a8')
+    : (v > 70 ? '#7dd3a8' : v > 40 ? '#e8c97d' : '#e8946b');
+  return (
+    <div className="space-y-2">
+      <div className="flex items-baseline justify-between">
+        <Eyebrow>{label}</Eyebrow>
+        <span className="font-mono text-xs text-stone-500">{sublabel}</span>
+      </div>
+      <div className="flex items-end gap-2">
+        <span className="font-display text-4xl md:text-5xl text-stone-100 num-display leading-none">{v}</span>
+        <span className="font-mono text-stone-600 text-sm pb-1">/100</span>
+      </div>
+      <div className="h-1 bg-stone-800 rounded overflow-hidden">
+        <div className="h-full transition-all duration-700 ease-out" style={{ width: `${v}%`, background: fillColor }} />
+      </div>
+    </div>
+  );
+};
+
+const MetersFlowDiagram = ({ bundleId }) => {
+  const meters = ['Compute', 'DB', 'Storage', 'Egress', 'MAU', 'Vector'];
+  return (
+    <svg viewBox="0 0 720 340" className="w-full h-auto" style={{ maxHeight: 340 }}>
+      <defs>
+        <linearGradient id="meterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#7dd3a8" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#7dd3a8" stopOpacity="0.4" />
+        </linearGradient>
+        <linearGradient id="walletGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#7dd3a8" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#7dd3a8" stopOpacity="0.05" />
+        </linearGradient>
+      </defs>
+
+      {bundleId === 'metered' && (
+        <g>
+          {meters.map((m, i) => {
+            const x = 80 + i * 100;
+            return (
+              <g key={m} className="anim-fade-in" style={{ animationDelay: `${i * 80}ms` }}>
+                <rect x={x} y={120} width={70} height={70} fill="rgba(125,211,168,0.12)" stroke="rgba(125,211,168,0.5)" strokeWidth="1" />
+                <text x={x + 35} y={165} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">{m}</text>
+                <text x={x + 35} y={210} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">$ →</text>
+                <text x={x + 35} y={228} textAnchor="middle" fontSize="9" fill="#78716c" fontFamily="JetBrains Mono">customer</text>
+              </g>
+            );
+          })}
+          <text x={360} y={60} textAnchor="middle" fontSize="13" fill="#a8a29e" fontFamily="Newsreader" fontStyle="italic">
+            Every meter bills directly. Maximum honesty, maximum anxiety.
+          </text>
+        </g>
+      )}
+
+      {bundleId === 'capped' && (
+        <g>
+          <rect x={50} y={90} width={620} height={130} fill="rgba(125,211,168,0.06)" stroke="#7dd3a8" strokeWidth="1.5" strokeDasharray="6 4" />
+          <text x={60} y={84} fontSize="11" fill="#7dd3a8" fontFamily="JetBrains Mono">SPEND CAP</text>
+          {meters.map((m, i) => {
+            const x = 80 + i * 100;
+            const isExcluded = m === 'Compute';
+            return (
+              <g key={m} className="anim-fade-in" style={{ animationDelay: `${i * 80}ms` }}>
+                <rect x={x} y={120} width={70} height={70}
+                      fill={isExcluded ? 'rgba(245,177,74,0.15)' : 'rgba(125,211,168,0.18)'}
+                      stroke={isExcluded ? '#f5b14a' : 'rgba(125,211,168,0.6)'} strokeWidth="1" />
+                <text x={x + 35} y={165} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">{m}</text>
+                {isExcluded && (
+                  <g>
+                    <text x={x + 35} y={235} textAnchor="middle" fontSize="9" fill="#f5b14a" fontFamily="JetBrains Mono">excluded</text>
+                    <line x1={x+35} y1={190} x2={x+35} y2={250} stroke="#f5b14a" strokeWidth="1" strokeDasharray="2 2" />
+                  </g>
+                )}
+              </g>
+            );
+          })}
+          <text x={360} y={285} textAnchor="middle" fontSize="13" fill="#a8a29e" fontFamily="Newsreader" fontStyle="italic">
+            Cap protects most meters — but compute, IPv4, replicas leak through.
+          </text>
+        </g>
+      )}
+
+      {bundleId === 'unlimited-fairuse' && (
+        <g>
+          <rect x={80} y={100} width={560} height={120} fill="url(#meterGrad)" stroke="#7dd3a8" strokeWidth="2" rx="4" />
+          <text x={360} y={150} textAnchor="middle" fontSize="22" fill="#0c0a09" fontFamily="Fraunces" fontWeight="600">UNLIMITED</text>
+          <text x={360} y={175} textAnchor="middle" fontSize="11" fill="#0c0a09" fontFamily="JetBrains Mono">all meters absorbed</text>
+          <line x1={80} y1={200} x2={640} y2={200} stroke="#f5b14a" strokeWidth="1.5" strokeDasharray="4 3" />
+          <text x={650} y={204} fontSize="10" fill="#f5b14a" fontFamily="JetBrains Mono">fair-use</text>
+          <text x={360} y={285} textAnchor="middle" fontSize="13" fill="#a8a29e" fontFamily="Newsreader" fontStyle="italic">
+            Customer sees one number. CFO sees one number too.
+          </text>
+        </g>
+      )}
+
+      {bundleId === 'workload-shaped' && (
+        <g className="anim-fade-in">
+          <rect x={50} y={50} width={180} height={80} fill="rgba(125,211,168,0.08)" stroke="rgba(125,211,168,0.3)" rx="4" />
+          <text x={140} y={72} textAnchor="middle" fontSize="10" fill="#7dd3a8" fontFamily="JetBrains Mono">CORE</text>
+          <text x={140} y={92} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">DB · Storage · Auth</text>
+          <text x={140} y={112} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">included</text>
+
+          <rect x={270} y={50} width={180} height={80} fill="rgba(125,211,168,0.08)" stroke="rgba(125,211,168,0.3)" rx="4" />
+          <text x={360} y={72} textAnchor="middle" fontSize="10" fill="#7dd3a8" fontFamily="JetBrains Mono">COMPUTE</text>
+          <text x={360} y={92} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">CPU · Edge Fns · Realtime</text>
+          <text x={360} y={112} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">draws from wallet</text>
+
+          <rect x={490} y={50} width={180} height={80} fill="rgba(216,164,240,0.08)" stroke="rgba(216,164,240,0.4)" rx="4" />
+          <text x={580} y={72} textAnchor="middle" fontSize="10" fill="#d8a4f0" fontFamily="JetBrains Mono">AI WORKLOADS</text>
+          <text x={580} y={92} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">Vector · Branching · Agents</text>
+          <text x={580} y={112} textAnchor="middle" fontSize="10" fill="#a8a29e" fontFamily="JetBrains Mono">add-on SKU</text>
+
+          <path d="M140 130 L260 200" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
+          <path d="M360 130 L360 200" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
+          <path d="M580 130 L460 200" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
+
+          <rect x={240} y={205} width={240} height={60} fill="url(#walletGrad)" stroke="#7dd3a8" strokeWidth="1.5" rx="6" />
+          <text x={360} y={230} textAnchor="middle" fontSize="14" fill="#7dd3a8" fontFamily="Fraunces" fontWeight="600" fontStyle="italic">Unified Credit Wallet</text>
+          <text x={360} y={250} textAnchor="middle" fontSize="11" fill="#a8a29e" fontFamily="JetBrains Mono">$ — one number, top-up anytime</text>
+
+          <path d="M360 265 L360 305" stroke="#7dd3a8" strokeWidth="1" fill="none" opacity="0.4" />
+          <text x={360} y={325} textAnchor="middle" fontSize="11" fill="#d6d3d1" fontFamily="JetBrains Mono">customer sees: $X</text>
+        </g>
+      )}
+    </svg>
+  );
+};
+
+const BundleBuilder = () => {
+  const [selectedPersona, setSelectedPersona] = useState('vibe-coder');
+  const [selectedBundle, setSelectedBundle] = useState('workload-shaped');
+  const persona = PERSONAS[selectedPersona];
+  const bundle = BUNDLES[selectedBundle];
+  const outcome = useMemo(() => computeOutcome(persona, bundle), [selectedPersona, selectedBundle]);
+
+  const verdictColors = {
+    good: 'text-emerald-300 border-emerald-700/50 bg-emerald-950/30',
+    ok: 'text-stone-200 border-stone-700/50 bg-stone-900/40',
+    warn: 'text-amber-300 border-amber-700/40 bg-amber-950/30',
+    bad: 'text-orange-300 border-orange-700/40 bg-orange-950/30',
+    neutral: 'text-stone-300 border-stone-700/50 bg-stone-900/40'
+  };
+
+  const PersonaIcon = persona.Icon;
+
+  return (
+    <section id="bundle-builder" className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay relative">
+      <div className="max-w-6xl mx-auto relative">
+        <SectionHeader
+          num="08"
+          label="Build Your Bundle — Interactive"
+          title="Five buyers, four bundle structures, twenty combinations. Same meters underneath."
+          lead="Move the persona axis and the bundle axis. The four operating-mechanism scores below are illustrative, derived from public bill-shock anecdotes and category benchmarks — calibration in production would replace these coefficients with real Supabase telemetry. The directional pattern is the point."
+        />
+
+        <div className="mb-6">
+          <Eyebrow className="mb-3">Step 1 — Pick the customer</Eyebrow>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            {Object.values(PERSONAS).map(p => {
+              const Icon = p.Icon;
+              const active = selectedPersona === p.id;
+              return (
+                <button key={p.id} onClick={() => setSelectedPersona(p.id)}
+                        className={`text-left p-4 border transition-all duration-200 ${active ? 'bg-stone-900' : 'bg-stone-950 border-stone-800 hover:border-stone-700'}`}
+                        style={active ? { borderColor: p.color, boxShadow: `inset 0 0 0 1px ${p.color}30` } : {}}>
+                  <Icon size={18} className="mb-3" style={{ color: active ? p.color : '#78716c' }} />
+                  <div className={`text-sm leading-tight mb-1 ${active ? 'text-stone-100' : 'text-stone-300'}`}>{p.name}</div>
+                  <div className="font-mono text-[10px] text-stone-500">{p.tagline}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mb-10">
+          <Eyebrow className="mb-3">Step 2 — Pick the bundle structure</Eyebrow>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {Object.values(BUNDLES).map(b => {
+              const active = selectedBundle === b.id;
+              return (
+                <button key={b.id} onClick={() => setSelectedBundle(b.id)}
+                        className={`text-left p-4 border transition-all duration-200 ${
+                          active
+                            ? b.id === 'workload-shaped' ? 'border-emerald-500 bg-emerald-950/20' : 'border-stone-500 bg-stone-900'
+                            : 'border-stone-800 hover:border-stone-700 bg-stone-950'
+                        }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-sm leading-tight ${active ? 'text-stone-100' : 'text-stone-300'}`}>{b.name}</span>
+                    {b.id === 'workload-shaped' && <span className="font-mono text-[9px] text-emerald-400 tracking-widest">★</span>}
+                  </div>
+                  <div className="font-mono text-[10px] text-stone-500 leading-tight">{b.subtitle}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="border border-stone-800 bg-gradient-to-br from-stone-950 to-stone-900/50 p-6 md:p-10 anim-fade-in" key={`${selectedPersona}-${selectedBundle}`}>
+          <div className="grid md:grid-cols-3 gap-6 pb-6 mb-8 border-b border-stone-800">
+            <div className="md:col-span-1">
+              <Eyebrow className="mb-3">Customer</Eyebrow>
+              <div className="flex items-center gap-3 mb-2">
+                <PersonaIcon size={18} style={{ color: persona.color }} />
+                <span className="font-display text-xl text-stone-100">{persona.name}</span>
+              </div>
+              <p className="font-body text-sm text-stone-400 italic">{persona.quote}</p>
+            </div>
+            <div className="md:col-span-2">
+              <Eyebrow className="mb-3">Bundle Mechanics</Eyebrow>
+              <div className="font-display text-xl text-stone-100 mb-2">{bundle.name}</div>
+              <p className="font-body text-sm text-stone-400 leading-relaxed">{bundle.desc}</p>
+            </div>
+          </div>
+
+          <div className="mb-10">
+            <Eyebrow className="mb-4">How the meters resolve</Eyebrow>
+            <div className="bg-stone-950/60 rounded-sm p-6">
+              <MetersFlowDiagram bundleId={selectedBundle} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-10">
+            <MetricMeter label="Predictability" value={outcome.predictability} sublabel="customer-side" />
+            <MetricMeter label="Trust / Comprehension" value={outcome.trust} sublabel="will they understand the bill" />
+            <MetricMeter label="Bill Shock Risk" value={outcome.billShockRisk} sublabel="lower is better" invert />
+            <MetricMeter label="Margin Health" value={outcome.marginHealth} sublabel="Supabase-side" />
+          </div>
+
+          <div className="bg-stone-950 border border-stone-800 p-6 md:p-8 mb-8">
+            <div className="flex items-baseline justify-between mb-4">
+              <Eyebrow>Estimated Monthly Bill (range across volatile months)</Eyebrow>
+              <span className="font-mono text-[10px] text-stone-600">persona volatility {persona.volatility}x</span>
+            </div>
+
+            <div className="relative h-20 mb-6">
+              <div className="absolute top-1/2 left-0 right-0 h-px bg-stone-800" />
+              <div className="absolute top-1/2 -translate-y-1/2 left-0">
+                <div className="w-px h-6 bg-stone-600 mb-1 mx-auto" />
+                <div className="text-center">
+                  <div className="font-mono text-[10px] text-stone-500 uppercase tracking-wider">Min</div>
+                  <div className="font-display text-xl text-stone-300 num-display">${Math.round(outcome.minBill)}</div>
+                </div>
+              </div>
+              <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 z-10">
+                <div className="w-1 h-12 bg-emerald-400 mb-1 mx-auto" />
+                <div className="text-center">
+                  <div className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider">Expected</div>
+                  <div className="font-display text-3xl text-emerald-300 num-display">${Math.round(outcome.expectedBill)}</div>
+                </div>
+              </div>
+              <div className="absolute top-1/2 -translate-y-1/2 right-0">
+                <div className={`w-px h-6 mb-1 mx-auto ${outcome.maxBill > outcome.expectedBill * 3 ? 'bg-amber-400' : 'bg-stone-600'}`} />
+                <div className="text-center">
+                  <div className={`font-mono text-[10px] uppercase tracking-wider ${outcome.maxBill > outcome.expectedBill * 3 ? 'text-amber-400' : 'text-stone-500'}`}>Worst case</div>
+                  <div className={`font-display text-xl num-display ${outcome.maxBill > outcome.expectedBill * 3 ? 'text-amber-300' : 'text-stone-300'}`}>${Math.round(outcome.maxBill)}</div>
+                </div>
+              </div>
+              <div className="absolute top-1/2 -translate-y-1/2 h-1.5"
+                   style={{ left: 0, right: 0,
+                            background: `linear-gradient(90deg, #7dd3a840 0%, #7dd3a880 50%, ${outcome.maxBill > outcome.expectedBill * 3 ? '#f5b14a' : '#7dd3a8'}60 100%)` }} />
+            </div>
+
+            <div className="font-mono text-[11px] text-stone-500 leading-relaxed pt-4 border-t border-stone-800">
+              {outcome.maxBill > outcome.expectedBill * 5
+                ? '⚠ Worst case is >5x the expected bill. This is the bill-shock pattern that drives churn.'
+                : outcome.maxBill > outcome.expectedBill * 2.5
+                ? 'Worst case is materially above expected. Surprise bills will happen on viral months.'
+                : outcome.maxBill > outcome.expectedBill * 1.4
+                ? 'Bill range is tight. Customers can budget against it.'
+                : 'Bill is effectively flat. Customer can plan against a single number.'}
+            </div>
+          </div>
+
+          <div className={`border p-6 ${verdictColors[outcome.verdictTone] || verdictColors.neutral}`}>
+            <Eyebrow className="mb-3">Customer verdict</Eyebrow>
+            <p className="font-display text-xl md:text-2xl italic leading-snug">"{outcome.verdict}"</p>
+            <div className="mt-4 pt-4 border-t border-stone-800/60 font-body text-sm text-stone-400">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-stone-500 mr-2">Pricing perception:</span>
+              {bundle.perception}
+            </div>
+          </div>
+
+          <div className="mt-8 flex items-start gap-3 text-stone-500 font-mono text-xs">
+            <Lightbulb size={14} className="flex-shrink-0 mt-0.5" />
+            <span>Compare any two bundles for the same persona — the right one is rarely "more unlimited" or "more metered." It's the one that matches how this customer actually thinks about the bill.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
+/* ============================================================
+   FRAMEWORK (was Recommended Model)
+   ============================================================ */
+
+const RecommendedModel = () => (
+  <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <SectionHeader
+        num="09"
+        label="Framework, Not Prescription"
+        title="The architecture I'd validate. The numbers below are hypotheses, not commitments."
+        lead="What follows is the shape of the change I'd test, not the change I'd ship. Specific price points and quotas are placeholders pending real elasticity data — the Pro $25 headline is the only number I'd hold as a constraint going in. The structure (meters underneath, credits in the middle, plans on top) is what the JD describes; the calibration belongs to telemetry I don't have yet."
+      />
+
+      <div className="mb-8 p-5 border border-amber-700/40 bg-amber-950/20 max-w-3xl">
+        <div className="flex gap-3">
+          <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
+          <p className="font-body text-sm text-stone-300 leading-relaxed">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-amber-400 block mb-2">Read this section as hypothesis, not proposal</span>
+            Specific tier names, price points, and quota numbers below are illustrative. They're benchmarked against external comparables (Lovable Starter at $20, Linear Plus at $20/seat, Vercel Pro at $20+credit, Clerk at $25+MAU) but would require fake-door tests, customer interviews, and elasticity modeling on Supabase data before I'd defend any of them as a final proposal.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-px bg-stone-800/60 border border-stone-800/60">
+        {RECOMMENDED_TIERS.map((tier, i) => (
+          <div key={tier.name}
+               className={`grid grid-cols-12 gap-4 items-center bg-stone-950 p-6 md:p-7 ${tier.new ? 'ring-1 ring-emerald-700/30 ring-inset' : ''}`}>
+            <div className="col-span-12 md:col-span-2">
+              <div className="flex items-center gap-3">
+                <span className="font-display text-2xl md:text-3xl text-stone-100">{tier.name}</span>
+                {tier.new && <span className="font-mono text-[9px] text-emerald-400 tracking-widest uppercase bg-emerald-950/50 px-1.5 py-0.5">Hypothesis</span>}
+              </div>
+            </div>
+            <div className="col-span-4 md:col-span-2">
+              <div className="font-display text-2xl text-emerald-300 num-display">{tier.price}</div>
+              <div className="font-mono text-[10px] text-stone-500">/month (illustrative)</div>
+            </div>
+            <div className="col-span-8 md:col-span-3 font-body text-stone-300 text-sm">{tier.target}</div>
+            <div className="col-span-6 md:col-span-2 font-mono text-xs text-stone-400">{tier.credits}</div>
+            <div className="col-span-6 md:col-span-3 font-body text-xs text-stone-500 italic">{tier.key}</div>
+          </div>
+        ))}
+
+        <div className="bg-purple-950/20 border-t border-purple-800/30 p-6 md:p-7">
+          <div className="grid grid-cols-12 gap-4 items-center">
+            <div className="col-span-12 md:col-span-2 flex items-center gap-2">
+              <BrainCircuit size={20} className="text-purple-300" />
+              <span className="font-display text-xl text-stone-100">AI Workloads</span>
+            </div>
+            <div className="col-span-4 md:col-span-2">
+              <div className="font-display text-xl text-purple-300 num-display">+$49–$299</div>
+              <div className="font-mono text-[10px] text-stone-500">add-on (range pending data)</div>
+            </div>
+            <div className="col-span-8 md:col-span-3 font-body text-stone-300 text-sm">AI-native startups, RAG, agents</div>
+            <div className="col-span-12 md:col-span-5 font-body text-xs text-stone-400 italic">
+              Vector storage uplift, branching pack, edge-function inference budget, agent rate limits, index advisor. The intent is to make AI cost legible on the invoice; the calibration is empirical.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-12 grid md:grid-cols-3 gap-8">
+        <div>
+          <Eyebrow className="mb-3">What I'd hold constant</Eyebrow>
+          <p className="font-body text-stone-300 leading-relaxed">
+            $25 Pro headline. Spend Cap default-on for self-serve. Generous Free tier. Org-level pooling. Open-source self-host as the trust backstop. Transparent per-resource meters underneath everything.
+          </p>
+        </div>
+        <div>
+          <Eyebrow className="mb-3">What I'd structurally change</Eyebrow>
+          <p className="font-body text-stone-300 leading-relaxed">
+            Unified credit/wallet primitive (the explicit JD ask). Spend Cap converted to dollar-denominated and the exclusion list shrunk. Mid-tier between $25 and $599. AI workloads broken out as a discrete SKU.
+          </p>
+        </div>
+        <div>
+          <Eyebrow className="mb-3">What I'd test before shipping</Eyebrow>
+          <p className="font-body text-stone-300 leading-relaxed">
+            Builder-tier price elasticity (fake-door at $9 vs $12 vs $15). Scale-tier feature set and price ($79 / $99 / $129). AI Workloads bundle composition with 30–50 RAG/agent customers in a private beta. Wholesale economics with one named partner.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ============================================================
+   BRIDGE
+   ============================================================ */
+
+const KelvinBridge = () => (
+  <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <SectionHeader
+        num="12"
+        label="Why This Profile"
+        title="Three subscription-pricing arcs, lived end-to-end, at consumer scale."
+        lead="The candidate read I'd offer Supabase: not the deepest database PM available — the senior product leader who has carried analogous transitions before, with measurable P&amp;L impact and the operating mechanisms to land them."
+      />
+      <div className="grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60">
+        {[
+          { era: 'Dec 2015 – Jan 2017', company: 'T-Mobile Postpaid Subscription', role: 'Senior PM, Subscription Product',
+            relevance: 'The metered → unlimited transition, owned end-to-end',
+            wins: ['Designed packaging for T-Mobile ONE — the canonical metered-to-unlimited consumer pricing pivot',
+                   'Postpaid base 56.8M → 75.6M during the period (T-Mobile US 8-K filings)',
+                   'Built bundled value-adds (Netflix, international roaming, inflight Wi-Fi) — partner-economics motion analogous to a Supabase / R2 / Resend bundle'],
+            tieIn: 'Direct precedent for the customer-side narrative Supabase will need to write for the next pricing change. The pattern transfers; the cost structure does not.' },
+          { era: 'Jan 2017 – Mar 2022', company: 'T-Mobile Billing & Benefits', role: 'Senior Manager, Customer Engagement PM',
+            relevance: 'Billing-as-product, with a measured CLV impact',
+            wins: ['Made Billing & Benefits T-Mobile\'s #1 digital property by engagement',
+                   '+204% YoY one-time payment completion; +76% recurring payment setup',
+                   '+23% CLV in 12 months; Mintel Best Wireless Billing 2019; highest ACSI in the industry. Promoted 3 PMs to Senior, hired 3 interns who converted to FT'],
+            tieIn: 'The Spend Cap UX redesign, dollar-denominated wallet, in-product cost forecasts, billing NPS — that is the surface I have built before, with measurable results.' },
+          { era: 'Apr 2022 – Sep 2023', company: 'Amazon Prime Worldwide Engagement', role: 'Senior Manager, L7 PMT',
+            relevance: 'Self-serve control plane, governance at scale',
+            wins: ['Authored PR/FAQ; led delivery of a global engagement platform reducing journey launch from 4 weeks → 4 hours',
+                   '26 countries, 30M+ monthly benefit utilizations, 1B+ monthly impressions',
+                   '+23% renewals, +17% shopping activity at peak. Built the team from 1 to 5 Senior PMTs; hub-and-spoke across 26 country-level PM teams; influenced a 100+ person cross-functional org'],
+            tieIn: 'Same operating shape as the Supabase pricing experimentation engine the JD describes — different surface, equivalent skill profile.' }
+        ].map((card, i) => (
+          <div key={i} className="bg-stone-950 p-8">
+            <Eyebrow className="mb-4">{card.era}</Eyebrow>
+            <div className="font-display text-2xl text-stone-100 mb-1">{card.company}</div>
+            <div className="font-mono text-xs text-stone-500 mb-5">{card.role}</div>
+            <div className="font-body italic text-emerald-300/90 mb-5 text-sm">▸ {card.relevance}</div>
+            <ul className="space-y-2.5 mb-6">
+              {card.wins.map((w, j) => (
+                <li key={j} className="font-body text-sm text-stone-300 leading-relaxed flex gap-2">
+                  <span className="text-stone-600 flex-shrink-0">·</span>
+                  <span>{w}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="pt-5 border-t border-stone-800 font-body text-sm text-stone-400 italic leading-relaxed">
+              {card.tieIn}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-16 grid md:grid-cols-2 gap-12 max-w-5xl">
+        <div>
+          <Eyebrow className="mb-4">Oct 2023 – present</Eyebrow>
+          <h3 className="font-display text-2xl text-stone-100 mb-4">Independent study and career break</h3>
+          <p className="font-body text-stone-300 leading-relaxed mb-4">
+            Stepped away from full-time work in late 2023 to support family through significant health challenges. Caregiving has stabilized; returning to full-time product leadership.
+          </p>
+          <p className="font-body text-stone-300 leading-relaxed">
+            Built hands-on fluency in parallel with Claude Code, Codex, and ChatGPT — applying them daily to real product and engineering problems. The intent was a practitioner's view of where LLM tooling ships and where it still breaks. Net effect: I am a customer of the AI-builder cohort Supabase's growth depends on understanding, with senior-PM judgment on what the buyer actually experiences and what they can't reason about.
+          </p>
+        </div>
+        <div>
+          <Eyebrow className="mb-4">What I would not claim</Eyebrow>
+          <p className="font-body text-stone-300 leading-relaxed mb-4">
+            I am not the deepest pgvector or Postgres-internals PM Supabase will interview. Cost-to-serve calculations on vector indexes, branching compute, and edge-function inference are areas where I would partner with engineering rather than lead alone in the first 90 days.
+          </p>
+          <p className="font-body text-stone-300 leading-relaxed">
+            What I would bring: subscription-pricing instinct, billing-as-product judgment, operating mechanisms to ship the change, and a decade-plus of evidence that pricing decisions land or fail on customer trust, not on the spreadsheet.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ============================================================
+   SOUNDBITES
+   ============================================================ */
+
+const Soundbites = () => {
+  const lines = [
+    'The mistake is copying telecom\'s cost structure. The right move is borrowing telecom\'s trust posture.',
+    'Pricing is the most-used surface in any subscription product. At T-Mobile we treated it as a product.',
+    'Hold the $25 like T-Mobile holds Price Lock.',
+    'The bill should never tell you about a meter the wallet didn\'t already warn you about.',
+    'The marketing can be unlimited-feeling. The economics shouldn\'t be.',
+    'I am the customer of the customer.',
+    'Don\'t promise unlimited. Do promise predictability.',
+    'I\'d rather argue 80% of the T-Mobile playbook transfers than claim I\'m the obvious database pricing PM.',
+    'Compute is the meter that surprises everyone, yet it\'s the most opaque. That\'s the bet of this hire.',
+    'Spend Cap is the right primitive. The opportunity is to make it dollar-denominated and shrink the exclusion list.'
+  ];
+  return null; // Soundbites section retired in v2 — replaced by Validation Plan and Open Questions
+};
+
+/* ============================================================
+   VALIDATION PLAN (NEW — §11)
+   ============================================================ */
+
+const ValidationPlan = () => {
+  const phases = [
+    {
+      tag: 'Days 1–30',
+      title: 'Listen and instrument',
+      bullets: [
+        'Read every Pro and Team support ticket from the last 90 days. Tag by meter, by surprise-bill pattern, by Spend-Cap-on-but-bill-still-shocked.',
+        'Pull telemetry: distribution of monthly bills (median, p90, p99) by signup source — direct vs. Lovable / Bolt / Cursor referral.',
+        'Audit the Spend Cap exclusion list against actual customer surprise events. Quantify: how often does the cap promise fail to hold, and on which line items?',
+        'One-on-ones with billing engineering, sales, support, and the founders. Get the internal mental model before forming external recommendations.'
+      ]
+    },
+    {
+      tag: 'Days 31–60',
+      title: 'Customer interviews and competitive baseline',
+      bullets: [
+        '30 customer interviews across the segment map: 6 vibe coders via Lovable / Bolt referrals, 6 indie devs, 6 mid-stage B2B SaaS, 6 AI-native, 6 enterprise.',
+        'Three core questions per interview: walk me through your last surprise bill. Walk me through how you decided whether to upgrade. What would make you migrate, and to whom?',
+        'External pricing comparables refresh — Neon, Vercel, Render, Firebase, Cloudflare. Triangulate on what features get bundled at what price points by stage of buyer.',
+        'Internal write-up: prioritized list of the three to five highest-leverage pricing moves, with supporting evidence and risk register.'
+      ]
+    },
+    {
+      tag: 'Days 61–90',
+      title: 'Test, not ship',
+      bullets: [
+        'Fake-door tests on the highest-priority hypotheses — pricing-page CTR on a Builder $9 tier card, on a Scale $99 tier card, on an AI Workloads add-on. Measured against control.',
+        'In-product cost-forecast prototype shown to a held-out cohort. Measure: does the dollar-denominated projection reduce surprise-bill incidence in the next billing cycle?',
+        'AI Workloads private beta: 30–50 RAG / agent customers, six-month telemetry window, gross-margin and NPS measured against control.',
+        'Recommendation memo to founders + commercial leadership at day 90. Three recommendations, with evidence, risk register, and a rollback plan for each.'
+      ]
+    }
+  ];
+
+  return (
+    <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+      <div className="max-w-6xl mx-auto">
+        <SectionHeader
+          num="10"
+          label="First 90 Days — Validation Plan"
+          title="Three months of measurement before any structural change ships."
+          lead="The fastest way to land badly on pricing is to ship a recommendation before you have the telemetry to defend it. The plan below is the operating cadence I'd run — listen, instrument, interview, fake-door — and only after that, propose a sequenced shipping plan to the founders."
+        />
+
+        <div className="grid md:grid-cols-3 gap-px bg-stone-800/60 border border-stone-800/60">
+          {phases.map((phase, i) => (
+            <div key={i} className="bg-stone-950 p-7 md:p-8">
+              <div className="flex items-center gap-3 mb-5">
+                <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-emerald-400 bg-emerald-950/40 px-2 py-1">{phase.tag}</span>
+              </div>
+              <h3 className="font-display text-2xl text-stone-100 mb-5 leading-tight">{phase.title}</h3>
+              <ul className="space-y-3">
+                {phase.bullets.map((b, j) => (
+                  <li key={j} className="font-body text-sm text-stone-300 leading-relaxed flex gap-3">
+                    <span className="text-emerald-700 flex-shrink-0 mt-1.5">▸</span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 grid md:grid-cols-2 gap-10 max-w-5xl">
+          <div>
+            <Eyebrow className="mb-3">What I would not do in the first 90 days</Eyebrow>
+            <ul className="space-y-2 font-body text-sm text-stone-300 leading-relaxed">
+              {['Raise the $25 Pro headline.',
+                'Restructure the Spend Cap behavior in a way that could increase surprise-bill incidence even temporarily.',
+                'Ship pricing changes that would require migration tooling for existing customers without a written rollback plan.',
+                'Promise outcome-based or token-based pricing in customer-facing comms before private-beta data is in.'].map((line, i) => (
+                <li key={i} className="flex gap-3">
+                  <X size={14} className="text-amber-400/70 flex-shrink-0 mt-1" />
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <Eyebrow className="mb-3">Operating mechanisms I'd establish</Eyebrow>
+            <ul className="space-y-2 font-body text-sm text-stone-300 leading-relaxed">
+              {['Monthly billing-NPS and surprise-bill-incidence review with founders.',
+                'Quarterly pricing experiment readout — what was tested, what shipped, what was killed.',
+                'Bi-weekly pricing-tickets triage with support and engineering, with explicit decision rights.',
+                'Annual pricing audit cadence — once the wallet primitive is in place, run a structural review every 12 months, not every 6 like Vercel.'].map((line, i) => (
+                <li key={i} className="flex gap-3">
+                  <Check size={14} className="text-emerald-400/70 flex-shrink-0 mt-1" />
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ============================================================
+   OPEN QUESTIONS (NEW — §12)
+   ============================================================ */
+
+const OpenQuestions = () => {
+  const groups = [
+    {
+      tag: 'About the data I can\'t see externally',
+      questions: [
+        'What share of new MRR comes through AI-builder partner channels (Lovable, Bolt, Cursor) vs. direct signup?',
+        'What is the actual distribution of "first surprise bill" — bill > 1.5x prior month, unanticipated by the customer — by segment?',
+        'How often does the Spend Cap exclusion list (compute, IPv4, replicas, PITR) drive the surprise vs. the included items?',
+        'What is the gross-margin spread between the Pro median customer and the Team median customer?'
+      ]
+    },
+    {
+      tag: 'About product strategy',
+      questions: [
+        'Where does AI workload pricing sit in the roadmap — separate primitive, or distributed across edge functions / pgvector / realtime?',
+        'How aggressive does leadership want to be on outcome-based or token-based pricing experiments in the next 12 months?',
+        'What is the position on annual contracts for self-serve? Is "no annual" still load-bearing, or is the door open?',
+        'Is the wholesale-to-AI-builder partner program a stated strategic priority, or whitespace someone needs to make the case for?'
+      ]
+    },
+    {
+      tag: 'About operating model',
+      questions: [
+        'Who owns pricing decisions today, and how does that change when this role lands?',
+        'What is the founder risk tolerance on pricing experiments that could affect existing customers in the test cohort?',
+        'How are pricing experiments written up and reviewed? Is there a postmortem culture for misfires?',
+        'What does success look like at month 6, 12, and 24 for this role specifically — beyond shipping plan changes?'
+      ]
+    }
+  ];
+
+  return (
+    <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800/60 grain-overlay">
+      <div className="max-w-6xl mx-auto">
+        <SectionHeader
+          num="11"
+          label="Open Questions"
+          title="Twelve questions whose answers would change the framework above."
+          lead="A measured posture means being explicit about what would update the recommendations. These are the questions I'd ask in a working session, organized by what kind of answer would move the analysis the most."
+        />
+
+        <div className="space-y-px bg-stone-800/60 border border-stone-800/60">
+          {groups.map((group, gi) => (
+            <div key={gi} className="bg-stone-950 p-8">
+              <Eyebrow className="mb-5 text-emerald-400/80">{group.tag}</Eyebrow>
+              <ul className="space-y-3">
+                {group.questions.map((q, qi) => (
+                  <li key={qi} className="font-body text-stone-300 leading-relaxed flex gap-4">
+                    <span className="font-mono text-xs text-stone-600 mt-1 num-display">{String(qi + 1).padStart(2, '0')}</span>
+                    <span>{q}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 max-w-3xl">
+          <p className="font-body text-stone-400 italic leading-relaxed">
+            Most of these questions only resolve through internal data and conversation. The point of listing them is to be explicit that the framework above is calibrated against external comparables, not Supabase telemetry — and to signal which inputs would most change my read.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+const Footer = () => (
+  <footer className="px-6 md:px-12 lg:px-20 py-16 border-t border-stone-800/60 grain-overlay">
+    <div className="max-w-6xl mx-auto">
+      <div className="editorial-rule mb-12" />
+      <div className="grid md:grid-cols-3 gap-8 mb-10">
+        <div>
+          <Eyebrow className="mb-3">Prepared by</Eyebrow>
+          <div className="font-display text-2xl text-stone-100 mb-1">Kelvin Zee</div>
+          <div className="font-mono text-xs text-stone-500 mb-3">Senior Product Leader · Seattle, WA</div>
+          <div className="font-mono text-xs text-stone-500">kelvinz@gmail.com · linkedin.com/in/kelvinz</div>
+        </div>
+        <div>
+          <Eyebrow className="mb-3">Prepared for</Eyebrow>
+          <div className="font-body text-stone-300">Supabase</div>
+          <div className="font-mono text-xs text-stone-500 mt-2">Product Manager, Pricing &amp; Billing — April 2026</div>
+        </div>
+        <div>
+          <Eyebrow className="mb-3">Sources &amp; method</Eyebrow>
+          <div className="font-body text-xs text-stone-400 leading-relaxed">
+            Supabase pricing pages and docs (billing-on-supabase, manage-your-usage, org-based-billing, billing-faq). Sacra ARR estimates. TechCrunch, Fortune, getlatka, UI Bakery, MetaCTO, CheckThat. Vendor pricing pages and changelogs: Neon, Vercel, PlanetScale, Firebase, Clerk, Cloudflare, Render, Cursor, Lovable. T-Mobile US 8-K filings (2016–2017). Verified April 2026; figures may move quickly in this category.
+          </div>
+        </div>
+      </div>
+      <div className="font-mono text-[10px] text-stone-600 tracking-widest pt-8 border-t border-stone-900 flex justify-between">
+        <span>§ END OF BRIEF — v2 (RECRUITER-PRIMARY)</span>
+        <span>APR 2026</span>
+      </div>
+    </div>
+  </footer>
+);
+
+/* ============================================================
+   MAIN APP + MOUNT
+   ============================================================ */
+
+const SupabasePricingBrief = () => (
+  <div className="min-h-screen bg-stone-950 text-stone-100 font-body" style={{ background: '#0c0a09' }}>
+    <Hero />
+    <SetupSection />
+    <TelecomTimeline />
+    <CurrentMeters />
+    <Competitive />
+    <AIShift />
+    <Segments />
+    <Theses />
+    <BundleBuilder />
+    <RecommendedModel />
+    <ValidationPlan />
+    <OpenQuestions />
+    <KelvinBridge />
+    <Footer />
+  </div>
+);
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<SupabasePricingBrief />);
+
+</script>
+</body>
+</html>
