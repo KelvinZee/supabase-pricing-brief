@@ -950,20 +950,46 @@ const Theses = () => (
 
 function computeOutcome(persona, bundle) {
   const baseCost = persona.typicalBase;
-  const expectedBill = baseCost * (1 + (1 - bundle.predictabilityModifier) * 0.3);
-  const swingFactor = (persona.volatility - 1);
-  const minBill = Math.max(
-    bundle.id === 'unlimited-fairuse' ? bundle.base : baseCost * 0.6,
-    baseCost * (1 - swingFactor * 0.15 * (1 - bundle.predictabilityModifier))
-  );
+  const highCostPressure = (persona.usage.compute * 0.28) + (persona.usage.egress * 0.26) + (persona.usage.branching * 0.22) + (persona.usage.vector * 0.24);
+  const humanRisk = (persona.billShockSensitivity * 0.55) + (Math.min(100, persona.volatility * 16) * 0.45);
+  const literacyGap = 100 - persona.techLiteracy;
+
+  const expectedBill = bundle.id === 'unlimited-fairuse'
+    ? bundle.base
+    : baseCost * (1 + (1 - bundle.predictabilityModifier) * 0.35 + (highCostPressure / 100) * 0.08);
+
+  const swingFactor = Math.max(0, persona.volatility - 1);
+  const minBill = bundle.id === 'unlimited-fairuse'
+    ? bundle.base
+    : Math.max(baseCost * 0.55, baseCost * (1 - swingFactor * 0.13 * (1 - bundle.predictabilityModifier)));
+
   const maxBill = bundle.id === 'unlimited-fairuse'
     ? bundle.base
-    : baseCost * (1 + swingFactor * bundle.billShockModifier);
+    : baseCost * (1 + swingFactor * bundle.billShockModifier + (highCostPressure / 100) * 0.2);
 
-  const predictability = Math.max(8, Math.min(98, bundle.predictabilityModifier * 100 - (persona.volatility - 1) * 8));
-  const trust = Math.max(10, Math.min(98, bundle.trustModifier * 80 + persona.techLiteracy * 0.25));
-  const billShockRisk = Math.max(0, Math.min(100, bundle.billShockModifier * persona.billShockSensitivity * (persona.volatility / 3)));
-  const marginHealth = Math.max(15, Math.min(100, bundle.marginHealth - (persona.volatility - 1) * 4));
+  const predictability = Math.max(8, Math.min(98,
+    bundle.predictabilityModifier * 100
+    - swingFactor * 6
+    - (highCostPressure / 100) * 8
+  ));
+
+  const trust = Math.max(10, Math.min(98,
+    bundle.trustModifier * 70
+    + persona.techLiteracy * 0.28
+    - (bundle.id === 'metered' ? literacyGap * 0.18 : 0)
+    + (bundle.id === 'workload-shaped' ? 8 : 0)
+  ));
+
+  const billShockRisk = Math.max(0, Math.min(100,
+    bundle.billShockModifier * humanRisk * (0.85 + persona.volatility / 6) + (bundle.id === 'capped' ? highCostPressure * 0.08 : 0)
+  ));
+
+  const marginHealth = Math.max(15, Math.min(100,
+    bundle.marginHealth
+    - swingFactor * 3
+    - (bundle.id === 'unlimited-fairuse' ? highCostPressure * 0.35 : 0)
+    - (bundle.id === 'metered' ? 0 : highCostPressure * 0.04)
+  ));
 
   let verdict = '';
   let verdictTone = 'neutral';
@@ -973,33 +999,91 @@ function computeOutcome(persona, bundle) {
     else { verdict = 'Survivable but anxious. Likely churn after the first surprise bill.'; verdictTone = 'warn'; }
   } else if (bundle.id === 'capped') {
     if (persona.id === 'enterprise') { verdict = 'Spend Cap is the wrong primitive for this buyer — they want a contract, not a fence.'; verdictTone = 'warn'; }
-    else if (persona.volatility > 4) { verdict = "Cap helps the median month. Compute spike still hits because compute is on the exclusion list."; verdictTone = 'warn'; }
-    else { verdict = "Today's default. Works for most. Trust holds — until the first compute spike."; verdictTone = 'ok'; }
+    else if (persona.volatility > 4 || highCostPressure > 55) { verdict = "Cap helps the median month. Compute, branches, or egress can still surprise because not every cost surface is covered."; verdictTone = 'warn'; }
+    else { verdict = "Today's default. Works for most. Trust holds — until the first compute or branching spike."; verdictTone = 'ok'; }
   } else if (bundle.id === 'unlimited-fairuse') {
-    if (persona.volatility > 4) { verdict = 'Customer satisfaction high. Negative gross margin on heavy-tail outliers. Not sustainable at scale.'; verdictTone = 'bad'; }
+    if (persona.volatility > 4 || highCostPressure > 60) { verdict = 'Customer satisfaction high. Negative gross margin risk on heavy-tail outliers. Not sustainable without strict throttles.'; verdictTone = 'bad'; }
     else if (persona.id === 'enterprise') { verdict = "Enterprise doesn't want unlimited; they want a predictable line item with an SLA."; verdictTone = 'warn'; }
     else { verdict = 'Marketable, popular. Margin pressure on the long tail. Manageable only with strict cost-to-serve discipline.'; verdictTone = 'warn'; }
   } else if (bundle.id === 'workload-shaped') {
     if (persona.id === 'vibe-coder') { verdict = "Wallet metaphor plus a dollar-denominated cap converts the bill into a number this buyer can model. Trust mechanism intact."; verdictTone = 'good'; }
     else if (persona.id === 'ai-startup') { verdict = "AI Workloads add-on makes vector storage, branching, and agent loops legible on the invoice. Captured value, intentionally."; verdictTone = 'good'; }
     else if (persona.id === 'b2b-saas') { verdict = "A Scale-tier hypothesis closes the $25 → $599 cliff. SSO included. Procurement-friendly motion."; verdictTone = 'good'; }
-    else if (persona.id === 'enterprise') { verdict = "Committed Spend gives sales a procurement-friendly motion. EDP-style for >$50K commits."; verdictTone = 'good'; }
+    else if (persona.id === 'enterprise') { verdict = "Committed Spend gives sales a procurement-friendly motion. EDP-style for larger commits."; verdictTone = 'good'; }
     else { verdict = "Familiar Pro experience plus optional add-ons at growth points. Path to expansion preserved."; verdictTone = 'good'; }
   }
 
-  return { expectedBill, minBill, maxBill, predictability, trust, billShockRisk, marginHealth, verdict, verdictTone };
+  return { expectedBill, minBill, maxBill, predictability, trust, billShockRisk, marginHealth, verdict, verdictTone, highCostPressure, humanRisk, literacyGap };
 }
 
-const MetricMeter = ({ label, value, sublabel, invert = false }) => {
+function metricReasons(persona, bundle, outcome) {
+  const highCost = Math.round(outcome.highCostPressure);
+  const vol = persona.volatility.toFixed(1);
+  const literacy = persona.techLiteracy;
+  return {
+    predictability: `${persona.name} has ${vol}x volatility and ${highCost}/100 high-cost pressure. ${bundle.name} ${bundle.predictabilityModifier > 0.8 ? 'compresses the bill into a narrower forecastable range' : bundle.predictabilityModifier > 0.6 ? 'narrows the range but still leaves some exposed meters' : 'leaves most cost surfaces exposed'}.`,
+    trust: `${persona.name} starts with ${literacy}/100 technical literacy. Trust rises when the bundle translates meters into a language this buyer recognizes; it falls when the buyer must understand compute, egress, branches, and retries directly.`,
+    billShock: `${bundle.name} ${bundle.billShockModifier < 0.3 ? 'reduces surprise by adding wallet/cap mechanics' : bundle.billShockModifier < 0.8 ? 'reduces some surprises but still leaves tail events' : 'keeps the heavy-tail risk mostly with the customer'}. Risk is amplified by ${vol}x volatility and non-human traffic patterns.`,
+    margin: `Supabase-side health starts from the bundle's margin posture, then adjusts down for volatile workloads and expensive surfaces like compute, egress, branching, and AI/vector usage. Higher customer predictability is not automatically better for margin.`
+  };
+}
+
+function personaPressureRows(persona, outcome) {
+  return [
+    { label: 'Tech literacy', value: persona.techLiteracy, note: persona.techLiteracy > 70 ? 'Can read meters' : persona.techLiteracy > 40 ? 'Needs translation' : 'Needs plain-English pricing' },
+    { label: 'Usage volatility', value: Math.min(100, persona.volatility * 16), note: `${persona.volatility}x month-to-month swing` },
+    { label: 'Bill-shock sensitivity', value: persona.billShockSensitivity, note: persona.billShockSensitivity > 75 ? 'Trust is fragile' : 'Can tolerate some variance' },
+    { label: 'High-cost pressure', value: outcome.highCostPressure, note: 'Compute, egress, branching, vector mix' }
+  ];
+}
+
+function bundleLeverRows(bundle) {
+  const capStyle = bundle.id === 'metered' ? 'None by default'
+    : bundle.id === 'capped' ? 'Quota / Spend Cap'
+    : bundle.id === 'unlimited-fairuse' ? 'Fair-use throttle'
+    : 'Dollar wallet + workload caps';
+  const buyerLanguage = bundle.id === 'metered' ? 'CU-hours, GB, MAU'
+    : bundle.id === 'capped' ? 'Plan + included quotas'
+    : bundle.id === 'unlimited-fairuse' ? 'One flat number'
+    : 'Credits, workloads, forecast';
+  const marginControl = bundle.id === 'metered' ? 'Strongest direct pass-through'
+    : bundle.id === 'capped' ? 'Good if exclusions are clear'
+    : bundle.id === 'unlimited-fairuse' ? 'Weak without hard throttles'
+    : 'Strong if wallet eligibility is scoped';
+  const failureMode = bundle.id === 'metered' ? 'Customer confusion'
+    : bundle.id === 'capped' ? 'Exclusion-list surprise'
+    : bundle.id === 'unlimited-fairuse' ? 'Heavy-tail abuse'
+    : 'Over-abstraction or credit distrust';
+  return [
+    { label: 'Buyer language', value: buyerLanguage },
+    { label: 'Control primitive', value: capStyle },
+    { label: 'Margin control', value: marginControl },
+    { label: 'Failure mode', value: failureMode }
+  ];
+}
+
+const MiniBar = ({ value, tone = 'emerald' }) => {
+  const v = Math.round(Math.max(0, Math.min(100, value)));
+  const color = tone === 'risk'
+    ? (v > 70 ? '#e8946b' : v > 40 ? '#e8c97d' : '#7dd3a8')
+    : (v > 70 ? '#7dd3a8' : v > 40 ? '#e8c97d' : '#e8946b');
+  return (
+    <div className="h-1.5 bg-stone-800 rounded overflow-hidden">
+      <div className="h-full transition-all duration-700" style={{ width: `${v}%`, background: color }} />
+    </div>
+  );
+};
+
+const MetricMeter = ({ label, value, sublabel, invert = false, reason }) => {
   const v = Math.round(value);
   const fillColor = invert
     ? (v > 60 ? '#e8946b' : v > 30 ? '#e8c97d' : '#7dd3a8')
     : (v > 70 ? '#7dd3a8' : v > 40 ? '#e8c97d' : '#e8946b');
   return (
-    <div className="space-y-2">
-      <div className="flex items-baseline justify-between">
+    <div className="space-y-3 bg-stone-950/50 border border-stone-800/60 p-4 min-h-[250px] flex flex-col">
+      <div className="min-h-[46px]">
         <Eyebrow>{label}</Eyebrow>
-        <span className="font-mono text-xs text-stone-500">{sublabel}</span>
+        <div className="font-mono text-[10px] text-stone-500 mt-1 leading-snug">{sublabel}</div>
       </div>
       <div className="flex items-end gap-2">
         <span className="font-display text-4xl md:text-5xl text-stone-100 num-display leading-none">{v}</span>
@@ -1008,6 +1092,7 @@ const MetricMeter = ({ label, value, sublabel, invert = false }) => {
       <div className="h-1 bg-stone-800 rounded overflow-hidden">
         <div className="h-full transition-all duration-700 ease-out" style={{ width: `${v}%`, background: fillColor }} />
       </div>
+      <p className="font-body text-xs text-stone-500 leading-relaxed pt-2 border-t border-stone-800/50 flex-1">{reason}</p>
     </div>
   );
 };
@@ -1126,6 +1211,9 @@ const BundleBuilder = () => {
   const persona = PERSONAS[selectedPersona];
   const bundle = BUNDLES[selectedBundle];
   const outcome = useMemo(() => computeOutcome(persona, bundle), [selectedPersona, selectedBundle]);
+  const reasons = useMemo(() => metricReasons(persona, bundle, outcome), [selectedPersona, selectedBundle, outcome]);
+  const pressureRows = useMemo(() => personaPressureRows(persona, outcome), [selectedPersona, outcome]);
+  const leverRows = useMemo(() => bundleLeverRows(bundle), [selectedBundle]);
 
   const verdictColors = {
     good: 'text-emerald-300 border-emerald-700/50 bg-emerald-950/30',
@@ -1143,11 +1231,11 @@ const BundleBuilder = () => {
         <SectionHeader
           num="08"
           label="Build Your Bundle — Interactive"
-          title="Five buyers, four bundle structures, twenty combinations. Same meters underneath."
-          lead="Move the persona axis and the bundle axis. The four operating-mechanism scores below are illustrative, derived from public bill-shock anecdotes and category benchmarks — calibration in production would replace these coefficients with real Supabase telemetry. The directional pattern is the point."
+          title="A sensitivity model, not a pricing recommender."
+          lead="Step 1 changes the customer risk profile: technical literacy, volatility, bill-shock sensitivity, and expensive workload mix. Step 2 changes the operating model: what gets exposed, capped, translated, or absorbed. The scores below are illustrative, not calibrated recommendations. In production, Supabase telemetry would replace these coefficients."
         />
 
-        <div className="mb-6">
+        <div className="mb-8">
           <Eyebrow className="mb-3">Step 1 — Pick the customer</Eyebrow>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
             {Object.values(PERSONAS).map(p => {
@@ -1164,6 +1252,23 @@ const BundleBuilder = () => {
               );
             })}
           </div>
+
+          <div className="mt-4 grid md:grid-cols-4 gap-px bg-stone-800/60 border border-stone-800/60">
+            {pressureRows.map((row, i) => (
+              <div key={row.label} className="bg-stone-950 p-4">
+                <div className="flex items-baseline justify-between gap-3 mb-2">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-stone-500">{row.label}</span>
+                  <span className="font-display text-lg text-stone-200 num-display">{Math.round(row.value)}</span>
+                </div>
+                <MiniBar value={row.value} tone={row.label.includes('Bill') || row.label.includes('volatility') || row.label.includes('High') ? 'risk' : 'emerald'} />
+                <div className="font-body text-xs text-stone-500 mt-2 leading-snug">{row.note}</div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-3 font-body text-sm text-stone-500 leading-relaxed">
+            This is why Step 1 matters: the same bundle should not score the same for a Vibe Coder, an AI-native startup, and Enterprise. The customer selection sets the baseline risk before pricing architecture does anything.
+          </p>
         </div>
 
         <div className="mb-10">
@@ -1187,6 +1292,19 @@ const BundleBuilder = () => {
               );
             })}
           </div>
+
+          <div className="mt-4 grid md:grid-cols-4 gap-px bg-stone-800/60 border border-stone-800/60">
+            {leverRows.map(row => (
+              <div key={row.label} className="bg-stone-950 p-4 min-h-[92px]">
+                <div className="font-mono text-[10px] uppercase tracking-wider text-stone-500 mb-2">{row.label}</div>
+                <div className="font-body text-sm text-stone-300 leading-snug">{row.value}</div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-3 font-body text-sm text-stone-500 leading-relaxed">
+            This is why Step 2 matters: the bundle selection changes the mechanism. It decides whether risk is passed through to the customer, stopped by a cap, flattened into a promise, or translated through a credit wallet and workload-specific controls.
+          </p>
         </div>
 
         <div className="border border-stone-800 bg-gradient-to-br from-stone-950 to-stone-900/50 p-6 md:p-10 anim-fade-in" key={`${selectedPersona}-${selectedBundle}`}>
@@ -1213,11 +1331,26 @@ const BundleBuilder = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-10">
-            <MetricMeter label="Predictability" value={outcome.predictability} sublabel="customer-side" />
-            <MetricMeter label="Trust / Comprehension" value={outcome.trust} sublabel="will they understand the bill" />
-            <MetricMeter label="Bill Shock Risk" value={outcome.billShockRisk} sublabel="lower is better" invert />
-            <MetricMeter label="Margin Health" value={outcome.marginHealth} sublabel="Supabase-side" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <MetricMeter label="Predictability" value={outcome.predictability} sublabel="customer-side" reason={reasons.predictability} />
+            <MetricMeter label="Trust / Comprehension" value={outcome.trust} sublabel="will they understand the bill?" reason={reasons.trust} />
+            <MetricMeter label="Bill Shock Risk" value={outcome.billShockRisk} sublabel="lower is better" invert reason={reasons.billShock} />
+            <MetricMeter label="Margin Health" value={outcome.marginHealth} sublabel="Supabase-side" reason={reasons.margin} />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4 mb-10">
+            <div className="border border-stone-800 bg-stone-950/60 p-5">
+              <Eyebrow className="mb-3">What Step 1 changed</Eyebrow>
+              <p className="font-body text-sm text-stone-400 leading-relaxed">
+                {persona.name} changes the starting conditions: technical literacy, volatility, bill-shock sensitivity, and expensive workload mix. That is why a bundle that looks safe for Enterprise can still be dangerous for a Vibe Coder or AI-native startup.
+              </p>
+            </div>
+            <div className="border border-stone-800 bg-stone-950/60 p-5">
+              <Eyebrow className="mb-3">What Step 2 changed</Eyebrow>
+              <p className="font-body text-sm text-stone-400 leading-relaxed">
+                {bundle.name} changes who absorbs uncertainty. Pure metering pushes it to the customer. Unlimited pushes it to Supabase. Spend Cap blocks some overages. Wallet + workload controls tries to translate the risk while keeping the meters visible.
+              </p>
+            </div>
           </div>
 
           <div className="bg-stone-950 border border-stone-800 p-6 md:p-8 mb-8">
@@ -1276,7 +1409,7 @@ const BundleBuilder = () => {
 
           <div className="mt-8 flex items-start gap-3 text-stone-500 font-mono text-xs">
             <Lightbulb size={14} className="flex-shrink-0 mt-0.5" />
-            <span>Compare any two bundles for the same persona — the right one is rarely "more unlimited" or "more metered." It's the one that matches how this customer actually thinks about the bill.</span>
+            <span>Use this as a discussion tool, not a recommendation engine. A real version would be trained on Supabase cohorts: first-bill support tickets, churn after overage, meter-level gross margin, public sentiment, and upgrade paths by customer type.</span>
           </div>
         </div>
       </div>
