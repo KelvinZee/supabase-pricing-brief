@@ -4,8 +4,6 @@ A measured read of Supabase's current pricing surface, the buyer-base shift driv
 
 Prepared by Kelvin Zee ahead of an interview for the Product Manager, Pricing & Billing role at Supabase. April 2026.
 
-**Live site:** [your-github-username.github.io/supabase-pricing-brief](#)
-
 ## What this is
 
 A self-contained interactive brief covering twelve sections — context, telecom-evolution analogy used carefully, current Supabase pricing architecture, competitive landscape, AI-builder customer shift, segment map, four pricing theses, an interactive Bundle Builder (persona × bundle structure → bill / trust / margin trade-off visualization), the framework I'd validate, a 90-day validation plan, open questions, and the candidate read.
